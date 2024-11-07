@@ -10,14 +10,14 @@ import java.sql.SQLException;
 import java.util.Base64;
 
 public class RegistrationForm extends JFrame {
-    private JTextField firstNameField;
-    private JTextField lastNameField;
-    private JTextField userNameField;
-    private JTextField emailField;
-    private JPasswordField passwordField;
-    private JPasswordField confirmPasswordField;
-    private JRadioButton studentRadioButton;
-    private JRadioButton ownerRadioButton;
+    protected JTextField firstNameField;
+    protected JTextField lastNameField;
+    protected JTextField userNameField;
+    protected JTextField emailField;
+    protected JPasswordField passwordField;
+    protected JPasswordField confirmPasswordField;
+    protected JRadioButton studentRadioButton;
+    protected JRadioButton ownerRadioButton;
 
     public RegistrationForm() {
         setTitle("Register");
@@ -178,5 +178,43 @@ public class RegistrationForm extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(RegistrationForm::new);
+    }
+
+
+
+
+
+    //Testing Part
+    public String getUsername() {
+        return userNameField.getText();
+    }
+
+    public String getPassword() {
+        return new String(passwordField.getPassword());
+    }
+
+    public String getEmail() {
+        return emailField.getText();
+    }
+
+    public boolean registerUser() {
+        // Basic validation checks (this can be customized further)
+        if (getUsername().isEmpty() || getPassword().isEmpty() || getEmail().isEmpty()) {
+            return false; // validation failed
+        }
+
+        // Validate email format
+        if (!getEmail().matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            return false; // Invalid email format
+        }
+
+        // Password validation example
+        if (getPassword().length() < 8) {
+            return false; // Password too short
+        }
+
+        // Example: Add more validation and functionality (e.g., checking if username/email is already taken)
+
+        return true; // Registration successful
     }
 }
