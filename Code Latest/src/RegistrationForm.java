@@ -162,7 +162,7 @@ public class RegistrationForm extends JFrame {
 
             JOptionPane.showMessageDialog(null, "Registration successful!");
             Login_GUI log = new Login_GUI();
-            return;
+            dispose();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Registration failed: " + ex.getMessage());
         } finally {
