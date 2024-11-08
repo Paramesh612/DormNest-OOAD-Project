@@ -9,7 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Base64;
 
-public class RegistrationForm extends JFrame {
+public class RegistrationForm_GUI extends JFrame {
     protected JTextField firstNameField;
     protected JTextField lastNameField;
     protected JTextField userNameField;
@@ -19,13 +19,20 @@ public class RegistrationForm extends JFrame {
     protected JRadioButton studentRadioButton;
     protected JRadioButton ownerRadioButton;
 
-    public RegistrationForm() {
+    public RegistrationForm_GUI() {
+
+        UIManager.put("Label.font", new Font("Arial", Font.BOLD, 16));
+        UIManager.put("TextField.font", new Font("Arial", Font.PLAIN, 14));
+        UIManager.put("Button.font", new Font("Arial", Font.BOLD, 16));
+
         setTitle("Register");
-        setSize(400, 450);
+//        setSize(400, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize if full-screen not supported
 
         JPanel panel = new JPanel(new GridBagLayout());
+        panel.setBackground(Color.decode("#8aaba5"));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -56,6 +63,7 @@ public class RegistrationForm extends JFrame {
         gbc.gridy = 3;
         panel.add(new JLabel("User Name:"), gbc);
         userNameField = new JTextField(15);
+//        userNameField.setBackground(Color.decode("#aecec8"));
         gbc.gridx = 1;
         panel.add(userNameField, gbc);
 
@@ -70,6 +78,7 @@ public class RegistrationForm extends JFrame {
         gbc.gridy = 5;
         panel.add(new JLabel("Password:"), gbc);
         passwordField = new JPasswordField(15);
+//        passwordField.setBackground(Color.decode("#aecec8"));
         gbc.gridx = 1;
         panel.add(passwordField, gbc);
 
@@ -85,7 +94,9 @@ public class RegistrationForm extends JFrame {
         gbc.gridy = 7;
         panel.add(new JLabel("User Type:"), gbc);
         studentRadioButton = new JRadioButton("Student");
+        studentRadioButton.setBackground(Color.decode("#8aaba5"));
         ownerRadioButton = new JRadioButton("Owner");
+        ownerRadioButton.setBackground(Color.decode("#8aaba5"));
         ButtonGroup userTypeGroup = new ButtonGroup();
         userTypeGroup.add(studentRadioButton);
         userTypeGroup.add(ownerRadioButton);
@@ -96,6 +107,7 @@ public class RegistrationForm extends JFrame {
         panel.add(ownerRadioButton, gbc);
 
         JButton submitButton = new JButton("Submit");
+        submitButton.setBackground(Color.decode("#809c97"));
         submitButton.addActionListener(new SubmitButtonListener());
         gbc.gridx = 0;
         gbc.gridy = 9;
@@ -177,7 +189,7 @@ public class RegistrationForm extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(RegistrationForm::new);
+        SwingUtilities.invokeLater(RegistrationForm_GUI::new);
     }
 
 

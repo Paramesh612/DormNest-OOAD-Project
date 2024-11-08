@@ -7,13 +7,13 @@
 //import static org.junit.jupiter.api.Assertions.assertFalse;
 //import static org.junit.jupiter.api.Assertions.assertTrue;
 //
-//class RegistrationFormTest extends RegistrationForm        {
+//class RegistrationFormTest extends RegistrationForm_GUI        {
 //
-//    private RegistrationForm registrationForm;
+//    private RegistrationForm_GUI registrationForm;
 //
 //    @BeforeEach
 //    void setUp() {
-//        registrationForm = new RegistrationForm();
+//        registrationForm = new RegistrationForm_GUI();
 //    }
 //
 //    @Test

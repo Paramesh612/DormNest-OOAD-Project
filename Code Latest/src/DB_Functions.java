@@ -9,7 +9,7 @@ public class DB_Functions {
                 Class.forName("org.postgresql.Driver");
                 con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/"+dbname,uname,pass);
                 if(con!=null){
-                    System.out.println("Connecction Established :)");
+                    System.out.println("Connection Established :)");
                 }else{
                     System.out.println("Connection Failed :(");
                 }
