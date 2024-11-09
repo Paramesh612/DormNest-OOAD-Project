@@ -93,6 +93,7 @@ public class Login_GUI {
                         // Check if the password matches the stored hash
                         if (verifyPassword(passString, storedHash)) {
                             JOptionPane.showMessageDialog(frame, "Login Successful!");
+                            frame.dispose();
                             // Proceed to Student Dashboard
                         } else {
                             warning.setVisible(true);
