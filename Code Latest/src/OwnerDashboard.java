@@ -74,8 +74,8 @@ public class OwnerDashboard extends JFrame {
     // Helper method to load data from the database
     private void loadDataFromDatabase() {
         String url = "jdbc:mysql://localhost:3306/your_database"; // Replace with your DB URL
-        String user = "your_username"; // Replace with your DB username
-        String password = "your_password"; // Replace with your DB password
+        String user = "postgre"; // Replace with your DB username
+        String password = "root"; // Replace with your DB password
 
         try (Connection conn = DriverManager.getConnection(url, user, password)) {
             // Fetch owner details
