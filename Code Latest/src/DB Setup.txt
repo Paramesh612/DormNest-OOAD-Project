@@ -4,6 +4,7 @@ CREATE TABLE users (
     lastname VARCHAR(100),
     username VARCHAR(100) UNIQUE,
     email VARCHAR(100) UNIQUE,
+    phone_number VARCHAR(15),
     password VARCHAR(255),  -- Store hashed password
     user_type VARCHAR(50),  -- 'student' or 'owner'
     photo BYTEA  -- To store photo as binary data
