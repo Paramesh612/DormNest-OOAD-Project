@@ -1,0 +1,47 @@
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    firstname VARCHAR(100),
+    lastname VARCHAR(100),
+    username VARCHAR(100) UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),  -- Store hashed password
+    user_type VARCHAR(50),  -- 'student' or 'owner'
+    photo BYTEA  -- To store photo as binary data
+);
+
+CREATE TABLE accommodation (
+    accommodation_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,  -- Only for owners
+    accommodation_name VARCHAR(255),
+    accommodation_address TEXT,
+    status VARCHAR(20),  -- 'vacant' or 'not vacant'
+    numRooms INTEGER,
+    rent DECIMAL(10, 2)
+);
+
+CREATE TABLE student_details (
+    student_id INTEGER PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+    preferred_rent DECIMAL(10, 2),
+    preferred_location VARCHAR(255),  -- Location preference
+    has_pets BOOLEAN,
+    worksAtNight BOOLEAN,  -- True if student works at night
+    max_distance INTEGER,  -- Max distance from workplace
+    cleanliness_preference VARCHAR(50),  -- E.g., 'very clean', 'moderate'
+    social_lifestyle VARCHAR(50),  -- E.g., 'introverted', 'extroverted'
+    allergy_information TEXT,  -- Allergies (pets, dust, etc.)
+    meal_preference VARCHAR(50),  -- E.g., 'vegetarian', 'non-vegetarian'
+    transportation_method VARCHAR(50),  -- E.g., 'car', 'bike', 'public transport'
+    max_budget_for_roommate DECIMAL(10, 2)  -- Maximum contribution towards rent
+);
+
+CREATE TABLE contracts (
+    contract_id SERIAL PRIMARY KEY,
+    owner_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    student_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    accommodation_id INTEGER REFERENCES accommodation(accommodation_id) ON DELETE CASCADE,
+    contract_start_date DATE,
+    contract_years INTEGER,  -- Can be NULL if not set
+    contract_status VARCHAR(50),  -- E.g., 'active', 'terminated', 'expired'
+    security_deposit DECIMAL(10, 2)
+);
+

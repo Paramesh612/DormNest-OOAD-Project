@@ -18,7 +18,7 @@ public class Login_GUI {
 
         // Define colors
         Color backgroundColor = Color.decode("#8aaba5");
-        Color inputBoxColor = Color.decode("#aecec8");
+        Color inputBoxColor = Color.decode("#FFFFFF");
         Color buttonColor = Color.decode("#809c97");
 
         // Set background color
