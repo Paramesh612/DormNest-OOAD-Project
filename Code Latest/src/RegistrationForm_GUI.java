@@ -26,7 +26,7 @@ public class RegistrationForm_GUI extends JFrame {
         UIManager.put("Button.font", new Font("Arial", Font.BOLD, 16));
 
         setTitle("Register");
-//        setSize(400, 450);
+        // setSize(400, 450);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize if full-screen not supported
@@ -63,7 +63,7 @@ public class RegistrationForm_GUI extends JFrame {
         gbc.gridy = 3;
         panel.add(new JLabel("User Name:"), gbc);
         userNameField = new JTextField(15);
-//        userNameField.setBackground(Color.decode("#aecec8"));
+        // userNameField.setBackground(Color.decode("#aecec8"));
         gbc.gridx = 1;
         panel.add(userNameField, gbc);
 
@@ -78,7 +78,7 @@ public class RegistrationForm_GUI extends JFrame {
         gbc.gridy = 5;
         panel.add(new JLabel("Password:"), gbc);
         passwordField = new JPasswordField(15);
-//        passwordField.setBackground(Color.decode("#aecec8"));
+        // passwordField.setBackground(Color.decode("#aecec8"));
         gbc.gridx = 1;
         panel.add(passwordField, gbc);
 
@@ -157,7 +157,8 @@ public class RegistrationForm_GUI extends JFrame {
         }
     }
 
-    private void registerUser(String firstName, String lastName, String userName, String email, String hashedPassword, String userType) {
+    private void registerUser(String firstName, String lastName, String userName, String email, String hashedPassword,
+            String userType) {
         DB_Functions db = new DB_Functions();
         Connection conn = db.connect_to_db("DormNest", "postgres", "root");
 
@@ -192,11 +193,7 @@ public class RegistrationForm_GUI extends JFrame {
         SwingUtilities.invokeLater(RegistrationForm_GUI::new);
     }
 
-
-
-
-
-    //Testing Part
+    // Testing Part
     public String getUsername() {
         return userNameField.getText();
     }
@@ -225,7 +222,8 @@ public class RegistrationForm_GUI extends JFrame {
             return false; // Password too short
         }
 
-        // Example: Add more validation and functionality (e.g., checking if username/email is already taken)
+        // Example: Add more validation and functionality (e.g., checking if
+        // username/email is already taken)
 
         return true; // Registration successful
     }

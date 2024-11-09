@@ -202,7 +202,8 @@ public class RegistrationForm_GUI1 extends JFrame {
         }
     }
 
-    private void registerUser(String firstName, String lastName, String userName, String email, String phoneNumber, String hashedPassword, String userType, byte[] photo) {
+    private void registerUser(String firstName, String lastName, String userName, String email, String phoneNumber,
+            String hashedPassword, String userType, byte[] photo) {
         DB_Functions db = new DB_Functions();
         Connection conn = db.connect_to_db("DormNest", "postgres", "root");
 

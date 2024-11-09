@@ -13,7 +13,7 @@ public class Login_GUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLayout(new GridBagLayout());
 
-//        System.err.println("Full-screen mode is not supported.");
+        // System.err.println("Full-screen mode is not supported.");
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Maximize if full-screen not supported
 
         // Define colors
@@ -25,7 +25,7 @@ public class Login_GUI {
         frame.getContentPane().setBackground(backgroundColor);
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(10, 10, 10, 10);  // Add padding between components
+        gbc.insets = new Insets(10, 10, 10, 10); // Add padding between components
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Username Field
@@ -38,7 +38,7 @@ public class Login_GUI {
 
         JTextField uname = new JTextField(20);
         uname.setBackground(inputBoxColor);
-        uname.setPreferredSize(new Dimension(200, 30));  // Increase field size
+        uname.setPreferredSize(new Dimension(200, 30)); // Increase field size
         gbc.gridx = 1;
         frame.add(uname, gbc);
 
@@ -51,7 +51,7 @@ public class Login_GUI {
 
         JPasswordField pass = new JPasswordField(20);
         pass.setBackground(inputBoxColor);
-        pass.setPreferredSize(new Dimension(200, 30));  // Increase field size
+        pass.setPreferredSize(new Dimension(200, 30)); // Increase field size
         gbc.gridx = 1;
         frame.add(pass, gbc);
 
@@ -70,7 +70,7 @@ public class Login_GUI {
         submit.setPreferredSize(new Dimension(100, 40));
         gbc.gridy++;
         gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.CENTER;  // Center-align the button
+        gbc.anchor = GridBagConstraints.CENTER; // Center-align the button
         frame.add(submit, gbc);
 
         // Submit Button Action

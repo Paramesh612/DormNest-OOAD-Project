@@ -68,19 +68,22 @@ public class AddPropertyGUI extends JFrame {
 
         // Name Field
         nameField = new JTextField();
-        nameField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1), "Name", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
+        nameField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1), "Name",
+                TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
         nameField.setFont(new Font("Arial", Font.PLAIN, 20));
         upperFieldsPanel.add(nameField);
 
         // Number of People Field
         numPeopleField = new JTextField();
-        numPeopleField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1), "Number of People", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
+        numPeopleField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1),
+                "Number of People", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
         numPeopleField.setFont(new Font("Arial", Font.PLAIN, 20));
         upperFieldsPanel.add(numPeopleField);
 
         // Price Field
         priceField = new JTextField();
-        priceField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1), "Price", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
+        priceField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1), "Price",
+                TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
         priceField.setFont(new Font("Arial", Font.PLAIN, 20));
         upperFieldsPanel.add(priceField);
 
@@ -89,14 +92,16 @@ public class AddPropertyGUI extends JFrame {
 
         // Address Field
         addressField = new JTextField();
-        addressField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1), "Address", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
+        addressField.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1),
+                "Address", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
         addressField.setFont(new Font("Arial", Font.PLAIN, 20));
         mainPanel.add(addressField);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         // Owner's Note Field
         ownerNoteArea = new JTextArea();
-        ownerNoteArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1), "Owner's Note", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
+        ownerNoteArea.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.GRAY, 1),
+                "Owner's Note", TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.PLAIN, 20)));
         ownerNoteArea.setFont(new Font("Arial", Font.PLAIN, 20));
         mainPanel.add(ownerNoteArea);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -123,9 +128,11 @@ public class AddPropertyGUI extends JFrame {
         String user = "your_username";
         String password = "your_password";
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT name, address, price, num_people, owner_note FROM AccommodationDetails")) {
+        DB_Functions db = new DB_Functions();
+        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root");
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(
+                        "SELECT name, address, price, num_people, owner_note FROM AccommodationDetails")) {
 
             if (rs.next()) {
                 nameField.setText(rs.getString("name"));
