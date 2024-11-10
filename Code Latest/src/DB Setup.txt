@@ -1,172 +1,66 @@
-import java.awt.*;
-import javax.swing.*;
-import java.sql.*;
-import java.util.ArrayList;
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    firstname VARCHAR(100),
+    lastname VARCHAR(100),
+    username VARCHAR(100) UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    phone_number VARCHAR(15),
+    password VARCHAR(255),  -- Store hashed password
+    user_type VARCHAR(50),  -- 'student' or 'owner'
+    photo BYTEA  -- To store photo as binary data
+);
 
-public class OwnerDashboard extends JFrame {
-    private JTextArea ownerDetailsArea;
-    private JPanel propertyPanel;
-    int ownerId = 1;  // get from Session
+CREATE TABLE accommodation (
+    accommodation_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,  -- Only for owners
+    accommodation_name VARCHAR(255),
+    accommodation_address TEXT,
+    status VARCHAR(20),  -- 'vacant' or 'not vacant'
+    numRooms INTEGER,
+    rent DECIMAL(10, 2),
+    owner_note TEXT
+);
 
-    public OwnerDashboard() {
-        setTitle("Owner Dashboard");
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Set the frame to full screen
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new BorderLayout(10, 10));
+CREATE TABLE student_details (
+    student_id INTEGER PRIMARY KEY REFERENCES users(user_id) ON DELETE CASCADE,
+    preferred_rent DECIMAL(10, 2),
+    preferred_location VARCHAR(255),  -- Location preference
+    has_pets BOOLEAN,
+    worksAtNight BOOLEAN,  -- True if student works at night
+    max_distance INTEGER,  -- Max distance from workplace
+    cleanliness_preference VARCHAR(50),  -- E.g., 'very clean', 'moderate'
+    social_lifestyle VARCHAR(50),  -- E.g., 'introverted', 'extroverted'
+    allergy_information TEXT,  -- Allergies (pets, dust, etc.)
+    meal_preference VARCHAR(50),  -- E.g., 'vegetarian', 'non-vegetarian'
+    transportation_method VARCHAR(50),  -- E.g., 'car', 'bike', 'public transport'
+    max_budget_for_roommate DECIMAL(10, 2)  -- Maximum contribution towards rent
+);
 
-        // Main container panel for all elements
-        JPanel containerPanel = new JPanel();
-        containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
-        containerPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+CREATE TABLE contracts (
+    contract_id SERIAL PRIMARY KEY,
+    owner_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    student_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    accommodation_id INTEGER REFERENCES accommodation(accommodation_id) ON DELETE CASCADE,
+    contract_start_date DATE,
+    contract_years INTEGER,  -- Can be NULL if not set
+    contract_status VARCHAR(50),  -- E.g., 'active', 'terminated', 'expired'
+    security_deposit DECIMAL(10, 2)
+);
 
-        // Title Panel
-        JPanel titlePanel = new JPanel();
-        titlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        JLabel titleLabel = new JLabel("Owner Dashboard");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titlePanel.add(titleLabel);
+CREATE TABLE requests (
+    request_id SERIAL PRIMARY KEY,
+    sender_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    recipient_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    request_type VARCHAR(50),  -- E.g., 'roommate_request', 'accommodation_inquiry'
+    status VARCHAR(20) DEFAULT 'pending',  -- E.g., 'pending', 'accepted', 'rejected'
+    request_message TEXT,  -- Optional message with additional details
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
-        // Owner Info Panel
-        JPanel ownerInfoPanel = new JPanel(new BorderLayout(10, 10));
-        ownerInfoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-
-        // Owner image
-        JLabel ownerImageLabel = new JLabel("Owner Image"); // Placeholder text
-        ownerImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        ownerImageLabel.setPreferredSize(new Dimension(150, 150));
-        ownerImageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-
-        // Owner details
-        ownerDetailsArea = new JTextArea();
-        ownerDetailsArea.setFont(new Font("Arial", Font.PLAIN, 16));  // Increase font size
-        ownerDetailsArea.setEditable(false);
-        ownerDetailsArea.setLineWrap(true);
-        ownerDetailsArea.setWrapStyleWord(true);
-        ownerDetailsArea.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-        ownerInfoPanel.add(ownerImageLabel, BorderLayout.WEST);
-        ownerInfoPanel.add(ownerDetailsArea, BorderLayout.CENTER);
-
-        // Property Listings Section in a Scrollable Panel
-        propertyPanel = new JPanel();
-        propertyPanel.setLayout(new BoxLayout(propertyPanel, BoxLayout.Y_AXIS));
-
-        // Scroll pane for property listings
-        JScrollPane scrollPane = new JScrollPane(propertyPanel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        scrollPane.setPreferredSize(new Dimension(600, 500)); // Set preferred size for the scrollable area
-
-        // Adding components to container panel with spacing
-        containerPanel.add(titlePanel);
-        containerPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Space between title and details
-        containerPanel.add(ownerInfoPanel);
-        containerPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Space between details and properties
-        containerPanel.add(scrollPane); // Add the scrollable panel
-
-        // Add container panel to main frame
-        add(containerPanel, BorderLayout.CENTER);
-
-        // Load data from database
-        loadDataFromDatabase();
-
-        // Ensure frame is visible
-        setVisible(true);
-    }
-
-    // Helper method to load data from the database
-    private void loadDataFromDatabase() {
-        DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
-            // Fetch owner details
-            String ownerQuery = "SELECT firstname, lastname, email, phone_number, photo FROM users WHERE user_id = " + ownerId;
-            try (PreparedStatement ownerStmt = conn.prepareStatement(ownerQuery)) {
-                ResultSet ownerRs = ownerStmt.executeQuery();
-                if (ownerRs.next()) {
-                    String ownerDetails = "Owner Details:\n"
-                            + "Name: " + ownerRs.getString("firstname") + " " + ownerRs.getString("lastname") + "\n"
-                            + "Phone Number: " + ownerRs.getString("phone_number") + "\n"
-                            + "Email: " + ownerRs.getString("email");
-                    ownerDetailsArea.setText(ownerDetails);
-                    // Load owner photo if available
-                    byte[] imageData = ownerRs.getBytes("photo");
-                    if (imageData != null) {
-                        ImageIcon ownerImage = new ImageIcon(new ImageIcon(imageData).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH));
-                        JLabel ownerImageLabel = new JLabel(ownerImage);
-                        ownerInfoPanel.add(ownerImageLabel, BorderLayout.WEST);
-                    }
-                }
-            }
-
-            // Fetch property listings for the owner
-            String propertyQuery = "SELECT accommodation_name, accommodation_address, rent, status, owner_note FROM accommodation WHERE user_id = ?";
-            try (PreparedStatement propertyStmt = conn.prepareStatement(propertyQuery)) {
-                propertyStmt.setInt(1, ownerId);
-                ResultSet propertyRs = propertyStmt.executeQuery();
-                while (propertyRs.next()) {
-                    String accommodationName = propertyRs.getString("accommodation_name");
-                    String address = propertyRs.getString("accommodation_address");
-                    double rent = propertyRs.getDouble("rent");
-                    String status = propertyRs.getString("status");
-                    String ownerNote = propertyRs.getString("owner_note");
-
-                    // Fetch image for the accommodation
-                    String imageQuery = "SELECT image_data FROM accommodation_images WHERE accommodation_id = ?";
-                    try (PreparedStatement imageStmt = conn.prepareStatement(imageQuery)) {
-                        imageStmt.setInt(1, propertyRs.getInt("accommodation_id"));
-                        ResultSet imageRs = imageStmt.executeQuery();
-                        byte[] imageData = null;
-                        if (imageRs.next()) {
-                            imageData = imageRs.getBytes("image_data");
-                        }
-                        addPropertyListing(accommodationName, address, rent, status, ownerNote, imageData);
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading data from database.\n" + e.getMessage(), "Database Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
-    // Helper method to add a property listing with a border
-    private void addPropertyListing(String name, String address, double rent, String status, String note, byte[] imageData) {
-        JPanel card = new JPanel();
-        card.setLayout(new BorderLayout(10, 10));
-        card.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        card.setPreferredSize(new Dimension(600, 150));
-
-        // Add image if available
-        JLabel imageLabel = new JLabel();
-        if (imageData != null) {
-            ImageIcon imageIcon = new ImageIcon(new ImageIcon(imageData).getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH));
-            imageLabel.setIcon(imageIcon);
-        } else {
-            imageLabel.setText("No Image Available");
-            imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        }
-        card.add(imageLabel, BorderLayout.WEST);
-
-        // Details panel
-        JTextArea detailsArea = new JTextArea(
-                "Name: " + name + "\n" +
-                "Address: " + address + "\n" +
-                "Rent: $" + rent + "\n" +
-                "Status: " + status + "\n" +
-                "Owner Note: " + note
-        );
-        detailsArea.setFont(new Font("Arial", Font.PLAIN, 14));
-        detailsArea.setEditable(false);
-        detailsArea.setLineWrap(true);
-        detailsArea.setWrapStyleWord(true);
-        card.add(detailsArea, BorderLayout.CENTER);
-
-        propertyPanel.add(card);
-        propertyPanel.add(Box.createVerticalStrut(10)); // Space between cards
-        propertyPanel.revalidate();
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(OwnerDashboard::new);
-    }
-}
+CREATE TABLE accommodation_images (
+    image_id SERIAL PRIMARY KEY,
+    accommodation_id INTEGER REFERENCES accommodation(accommodation_id) ON DELETE CASCADE,
+    image_data BYTEA,  -- Store image data as binary
+    image_description VARCHAR(255),  -- Optional: Description of the image
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

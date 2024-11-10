@@ -104,12 +104,17 @@ public class OwnerDashboard extends JFrame {
             }
 
             // Fetch property listings
-            String propertyQuery = "SELECT owner_note FROM accommodation WHERE user_id = 1"; // Adjust query as needed
+            String propertyQuery = "SELECT property_name, rooms, address, rent, image_path FROM accommodation WHERE user_id = 1";
             try (PreparedStatement propertyStmt = conn.prepareStatement(propertyQuery)) {
                 ResultSet propertyRs = propertyStmt.executeQuery();
                 while (propertyRs.next()) {
-                    String propertyDetails = propertyRs.getString("description");
-                    addPropertyListing(propertyDetails);
+                    String propertyName = propertyRs.getString("property_name");
+                    int rooms = propertyRs.getInt("rooms");
+                    String address = propertyRs.getString("address");
+                    double rent = propertyRs.getDouble("rent");
+                    ImageIcon propertyImage = new ImageIcon(propertyRs.getString("image_path")); // Assumes image path is stored
+
+                    addPropertyCard(propertyName, rooms, address, rent, propertyImage);
                 }
             }
         } catch (SQLException e) {
@@ -118,7 +123,12 @@ public class OwnerDashboard extends JFrame {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
-
+    private void addPropertyCard(String name, int rooms, String address, double rent, ImageIcon image) {
+        PropertyCard propertyCard = new PropertyCard(name, rooms, address, rent, image);
+        propertyPanel.add(propertyCard);
+        propertyPanel.add(Box.createVerticalStrut(10)); // Space between cards
+        propertyPanel.revalidate(); // Refresh panel to show new listings
+    }
     // Helper method to add a property listing with a border
     private void addPropertyListing(String propertyDetails) {
         JLabel propertyLabel = new JLabel(propertyDetails);
