@@ -159,47 +159,47 @@ public class RoommateMatchingApp extends JFrame {
         SwingUtilities.invokeLater(RoommateMatchingApp::new);
     }
 }
-
-class Student {
-    private int userId;
-    private String firstname;
-    private String lastname;
-    private String phoneNumber;
-    private String email;
-    private byte[] photo;
-    private BigDecimal preferredRent;
-    private String preferredLocation;
-    private String socialLifestyle;
-    private String mealPreference;
-    private BigDecimal maxBudgetForRoommate;
-    private int score;
-
-    public Student(ResultSet rs) throws SQLException {
-        this.userId = rs.getInt("user_id");
-        this.firstname = rs.getString("firstname");
-        this.lastname = rs.getString("lastname");
-        this.phoneNumber = rs.getString("phone_number");
-        this.email = rs.getString("email");
-        this.photo = rs.getBytes("photo");
-        this.preferredRent = rs.getBigDecimal("preferred_rent");
-        this.preferredLocation = rs.getString("preferred_location");
-        this.socialLifestyle = rs.getString("social_lifestyle");
-        this.mealPreference = rs.getString("meal_preference");
-        this.maxBudgetForRoommate = rs.getBigDecimal("max_budget_for_roommate");
-    }
-
-    // Getters and setters...
-
-    public int getUserId() { return userId; }
-    public String getFirstname() { return firstname; }
-    public String getLastname() { return lastname; }
-    public byte[] getPhoto() { return photo; }
-    public BigDecimal getPreferredRent() { return preferredRent; }
-    public String getPreferredLocation() { return preferredLocation; }
-    public String getSocialLifestyle() { return socialLifestyle; }
-    public String getMealPreference() { return mealPreference; }
-    public BigDecimal getMaxBudgetForRoommate() { return maxBudgetForRoommate; }
-    public int getScore() { return score; }
-    public void setScore(int score) { this.score = score; }
-}
+//
+//class Student {
+//    private int userId;
+//    private String firstname;
+//    private String lastname;
+//    private String phoneNumber;
+//    private String email;
+//    private byte[] photo;
+//    private BigDecimal preferredRent;
+//    private String preferredLocation;
+//    private String socialLifestyle;
+//    private String mealPreference;
+//    private BigDecimal maxBudgetForRoommate;
+//    private int score;
+//
+//    public Student(ResultSet rs) throws SQLException {
+//        this.userId = rs.getInt("user_id");
+//        this.firstname = rs.getString("firstname");
+//        this.lastname = rs.getString("lastname");
+//        this.phoneNumber = rs.getString("phone_number");
+//        this.email = rs.getString("email");
+//        this.photo = rs.getBytes("photo");
+//        this.preferredRent = rs.getBigDecimal("preferred_rent");
+//        this.preferredLocation = rs.getString("preferred_location");
+//        this.socialLifestyle = rs.getString("social_lifestyle");
+//        this.mealPreference = rs.getString("meal_preference");
+//        this.maxBudgetForRoommate = rs.getBigDecimal("max_budget_for_roommate");
+//    }
+//
+//    // Getters and setters...
+//
+//    public int getUserId() { return userId; }
+//    public String getFirstname() { return firstname; }
+//    public String getLastname() { return lastname; }
+//    public byte[] getPhoto() { return photo; }
+//    public BigDecimal getPreferredRent() { return preferredRent; }
+//    public String getPreferredLocation() { return preferredLocation; }
+//    public String getSocialLifestyle() { return socialLifestyle; }
+//    public String getMealPreference() { return mealPreference; }
+//    public BigDecimal getMaxBudgetForRoommate() { return maxBudgetForRoommate; }
+//    public int getScore() { return score; }
+//    public void setScore(int score) { this.score = score; }
+//}
 
