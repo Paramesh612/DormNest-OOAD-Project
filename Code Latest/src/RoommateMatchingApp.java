@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -46,8 +47,9 @@ public class RoommateMatchingApp extends JFrame {
             PreparedStatement currentUserPs = conn.prepareStatement(currentUserQuery);
             currentUserPs.setInt(1, currentUserId);
             ResultSet currentUserRs = currentUserPs.executeQuery();
-            if (!currentUserRs.next()) return matchedStudents; // Return if current user not found
-
+            if (!currentUserRs.next()) {
+                return matchedStudents; // Return if current user not found
+            }
             HashMap<String, Object> currentUser = extractStudentData(currentUserRs);
 
             // Fetch other students' details and calculate matching scores
@@ -96,8 +98,12 @@ public class RoommateMatchingApp extends JFrame {
     private int calculateMatchingScore(HashMap<String, Object> s1, HashMap<String, Object> s2) {
         int score = 0;
 
-        if (s1.get("social_lifestyle").equals(s2.get("social_lifestyle"))) score += 20;
-        if (s1.get("meal_preference").equals(s2.get("meal_preference"))) score += 20;
+        if (s1.get("social_lifestyle").equals(s2.get("social_lifestyle"))) {
+            score += 20;
+        }
+        if (s1.get("meal_preference").equals(s2.get("meal_preference"))) {
+            score += 20;
+        }
 
         // Budget match calculation
         BigDecimal budget1 = (BigDecimal) s1.get("max_budget_for_roommate");
@@ -114,7 +120,9 @@ public class RoommateMatchingApp extends JFrame {
         }
 
         // Location match
-        if (s1.get("preferred_location").equals(s2.get("preferred_location"))) score += 20;
+        if (s1.get("preferred_location").equals(s2.get("preferred_location"))) {
+            score += 20;
+        }
 
         return score;
     }

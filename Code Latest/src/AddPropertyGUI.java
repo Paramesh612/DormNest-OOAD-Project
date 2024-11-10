@@ -121,31 +121,38 @@ public class AddPropertyGUI extends JFrame {
         add(mainPanel, BorderLayout.CENTER);
         setVisible(true);
     }
+
     private class submitAction implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             DB_Functions db = new DB_Functions();
             try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
 
+                if (conn == null) {
+                    JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
+                    return;
+                }
+
                 Statement stmt = conn.createStatement();
 
-                int userId;
-                userId = 2;
-//            userId = Session.get('userId');  :: wrong check
-                // For testing
-
-                String AccName = nameField.getText();
-                String AccAddress = addressField.getText();
+                int userId = 123; // Replace with the actual user ID
+                String accName = nameField.getText();
+                String accAddress = addressField.getText();
                 int numRooms = Integer.parseInt(numPeopleField.getText());
                 int rent = Integer.parseInt(priceField.getText());
-                String strQuery = String.format("Insert into accommodation(accommodation_id,user_id,accommodation_name,accommodation_address,status,numRooms,rent) values( %d, %s , %s , %s ,%d, %d ) ", userId, AccName, AccAddress, "vacant", numRooms, rent);
+
+                // Corrected query with properly quoted string values
+                String strQuery = String.format(
+                        "INSERT INTO accommodation (user_id, accommodation_name, accommodation_address, status, numRooms, rent) "
+                                +
+                                "VALUES (%d, '%s', '%s', 'vacant', %d, %d)",
+                        userId, accName, accAddress, numRooms, rent);
+
                 stmt.executeUpdate(strQuery);
+                JOptionPane.showMessageDialog(null, "Successfully Registered");
 
-                JOptionPane.showMessageDialog(null,"Successfully Registered");
-//                dispose();
-
-            } catch (Exception errrrror) {
-                JOptionPane.showMessageDialog(null,errrrror.getMessage());
+            } catch (Exception error) {
+                JOptionPane.showMessageDialog(null, error.getMessage());
             }
         }
     }
