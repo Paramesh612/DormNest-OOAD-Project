@@ -46,3 +46,15 @@ CREATE TABLE contracts (
     security_deposit DECIMAL(10, 2)
 );
 
+CREATE TABLE requests (
+    request_id SERIAL PRIMARY KEY,
+    sender_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    recipient_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+    request_type VARCHAR(50),  -- E.g., 'roommate_request', 'accommodation_inquiry'
+    status VARCHAR(20) DEFAULT 'pending',  -- E.g., 'pending', 'accepted', 'rejected'
+    request_message TEXT,  -- Optional message with additional details
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+

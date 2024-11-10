@@ -114,36 +114,39 @@ public class AddPropertyGUI extends JFrame {
         submitButton.setFont(new Font("Arial", Font.BOLD, 25));
         submitPanel.add(submitButton);
 
-        mainPanel.add(submitPanel);
+        submitButton.addActionListener(new submitAction());
 
-        // Load data from the database
-        loadDataFromDatabase();
+        mainPanel.add(submitPanel);
 
         add(mainPanel, BorderLayout.CENTER);
         setVisible(true);
     }
+    private class submitAction implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            DB_Functions db = new DB_Functions();
+            try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
 
-    private void loadDataFromDatabase() {
-        String url = "jdbc:postgresql://localhost:5432/your_database";
-        String user = "your_username";
-        String password = "your_password";
-
-        DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root");
                 Statement stmt = conn.createStatement();
-                ResultSet rs = stmt.executeQuery(
-                        "SELECT name, address, price, num_people, owner_note FROM AccommodationDetails")) {
 
-            if (rs.next()) {
-                nameField.setText(rs.getString("name"));
-                addressField.setText(rs.getString("address"));
-                priceField.setText(rs.getString("price"));
-                numPeopleField.setText(rs.getString("num_people"));
-                ownerNoteArea.setText(rs.getString("owner_note"));
+                int userId;
+                userId = 2;
+//            userId = Session.get('userId');  :: wrong check
+                // For testing
+
+                String AccName = nameField.getText();
+                String AccAddress = addressField.getText();
+                int numRooms = Integer.parseInt(numPeopleField.getText());
+                int rent = Integer.parseInt(priceField.getText());
+                String strQuery = String.format("Insert into accommodation(accommodation_id,user_id,accommodation_name,accommodation_address,status,numRooms,rent) values( %d, %s , %s , %s ,%d, %d ) ", userId, AccName, AccAddress, "vacant", numRooms, rent);
+                stmt.executeUpdate(strQuery);
+
+                JOptionPane.showMessageDialog(null,"Successfully Registered");
+//                dispose();
+
+            } catch (Exception errrrror) {
+                JOptionPane.showMessageDialog(null,errrrror.getMessage());
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
     }
 
