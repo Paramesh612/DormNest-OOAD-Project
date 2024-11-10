@@ -25,13 +25,14 @@ public class AccommodationDetailsSwingGUI extends JFrame {
 
         // Main Content Panel to hold the image carousel and details side by side
         JPanel mainContentPanel = new JPanel();
-        mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.X_AXIS)); // Use BoxLayout for horizontal layout
+        mainContentPanel.setLayout(new BoxLayout(mainContentPanel, BoxLayout.X_AXIS)); // Use BoxLayout for horizontal
+                                                                                       // layout
 
         // Image Carousel Panel
         JPanel imagePanel = new JPanel(new BorderLayout());
         imageLabel = new JLabel("Images", SwingConstants.CENTER);
         imageLabel.setPreferredSize(new Dimension(300, 200));
-        //imagePanel.setPreferredSize(new Dimension(200, 300));
+        // imagePanel.setPreferredSize(new Dimension(200, 300));
 
         JButton leftButton = new JButton("<");
         leftButton.setPreferredSize(new Dimension(50, 300));
@@ -92,9 +93,9 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         buttonPanel.add(sendRequestButton);
 
         // Adding panels to the frame in order
-        add(mainContentPanel, BorderLayout.NORTH);   // Top section with image and details
-        add(ownerNotePanel, BorderLayout.CENTER);    // Middle section with owner's note
-        add(buttonPanel, BorderLayout.SOUTH);        // Bottom section with button
+        add(mainContentPanel, BorderLayout.NORTH); // Top section with image and details
+        add(ownerNotePanel, BorderLayout.CENTER); // Middle section with owner's note
+        add(buttonPanel, BorderLayout.SOUTH); // Bottom section with button
 
         // Load data from database
         loadDataFromDatabase();
@@ -107,9 +108,11 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         String user = "your_username";
         String password = "your_password";
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT location, rent, amenities, seats_available, owner_note, image_path FROM AccommodationDetails")) {
+        DB_Functions db = new DB_Functions();
+        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root");
+                Statement stmt = conn.createStatement();
+                ResultSet rs = stmt.executeQuery(
+                        "SELECT location, rent, amenities, seats_available, owner_note, image_path FROM AccommodationDetails")) {
 
             if (rs.next()) {
                 locationLabel.setText("Location: " + rs.getString("location"));
@@ -156,15 +159,18 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         }
     }
 
-    /*private void updateImage() {
-        if (images != null && images.length > 0) {
-            imageLabel.setIcon(images[currentImageIndex]);
-        }
-    }*/
+    /*
+     * private void updateImage() {
+     * if (images != null && images.length > 0) {
+     * imageLabel.setIcon(images[currentImageIndex]);
+     * }
+     * }
+     */
     private void updateImage() {
         if (images != null && images.length > 0) {
             int maxWidth = 200; // Adjust this value as needed
-            Image resizedImage = images[currentImageIndex].getImage().getScaledInstance(maxWidth, -1, Image.SCALE_SMOOTH);
+            Image resizedImage = images[currentImageIndex].getImage().getScaledInstance(maxWidth, -1,
+                    Image.SCALE_SMOOTH);
             imageLabel.setIcon(new ImageIcon(resizedImage));
         }
     }

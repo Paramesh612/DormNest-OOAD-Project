@@ -1,0 +1,31 @@
+INSERT INTO requests (sender_id, recipient_id, request_type, status, request_message)
+VALUES
+    (1, 2, 'roommate_request', 'pending', 'Looking for a roommate in Downtown area.'),
+    (3, 2, 'accommodation_inquiry', 'accepted', 'Interested in renting accommodation at Sunnyvale Suites.');
+
+INSERT INTO contracts (owner_id, student_id, accommodation_id, contract_start_date, contract_years, contract_status, security_deposit)
+VALUES
+    (2, 1, 1, '2023-01-01', 1, 'active', 500.00),
+    (2, 3, 2, '2022-06-15', 2, 'terminated', 300.00);
+
+INSERT INTO student_details (student_id, preferred_rent, preferred_location, has_pets, worksAtNight, max_distance, cleanliness_preference, social_lifestyle, allergy_information, meal_preference, transportation_method, max_budget_for_roommate)
+VALUES
+    (1, 700.00, 'Downtown', TRUE, FALSE, 5, 'very clean', 'introverted', 'none', 'vegetarian', 'public transport', 400.00),
+    (3, 800.00, 'Uptown', FALSE, TRUE, 10, 'moderate', 'extroverted', 'dust', 'non-vegetarian', 'bike', 500.00);
+
+INSERT INTO users (firstname, lastname, username, email, phone_number, password, user_type, photo)
+VALUES
+    ('Alice', 'Smith', 'alice123', 'alice@example.com', '1234567890', 'hashed_password1', 'student', NULL),
+    ('Bob', 'Johnson', 'bob123', 'bob@example.com', '0987654321', 'hashed_password2', 'owner', NULL),
+    ('Carol', 'Williams', 'carol123', 'carol@example.com', '1122334455', 'hashed_password3', 'student', NULL);
+
+INSERT INTO accommodation (user_id, accommodation_name, accommodation_address, status, numRooms, rent)
+VALUES
+    (2, 'Greenwood Apartments', '123 Maple Street', 'vacant', 3, 750.00),
+    (2, 'Sunnyvale Suites', '456 Oak Avenue', 'not vacant', 2, 600.00);
+
+INSERT INTO users (firstname, lastname, username, email, phone_number, password, user_type, photo)
+VALUES
+    ('Alice', 'Smith', 'alice123', 'alice@example.com', '1234567890', 'hashed_password1', 'student', NULL),
+    ('Bob', 'Johnson', 'bob123', 'bob@example.com', '0987654321', 'hashed_password2', 'owner', NULL),
+    ('Carol', 'Williams', 'carol123', 'carol@example.com', '1122334455', 'hashed_password3', 'student', NULL);

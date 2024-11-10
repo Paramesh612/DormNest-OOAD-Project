@@ -2,11 +2,13 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import java.sql.*;
 
 public class StudentPreferencesForm_GUI extends JFrame {
     private JTextField studentIdField, preferredRentField, preferredLocationField, maxDistanceField, maxBudgetField;
     private JRadioButton hasPetsYes, hasPetsNo, worksAtNightYes, worksAtNightNo;
-    private JComboBox<String> cleanlinessPrefCombo, socialLifestyleCombo, mealPreferenceCombo, transportationMethodCombo;
+    private JComboBox<String> cleanlinessPrefCombo, socialLifestyleCombo, mealPreferenceCombo,
+            transportationMethodCombo;
     private JTextArea allergyInformationArea;
 
     public StudentPreferencesForm_GUI() {
@@ -24,7 +26,9 @@ public class StudentPreferencesForm_GUI extends JFrame {
         // Student ID
         panel.add(new JLabel("Student ID:"), gbc);
         studentIdField = new JTextField(10);
+        studentIdField.setText("Get from session");
         panel.add(studentIdField, gbc);
+
 
         // Preferred Rent
         gbc.gridy = 1;
@@ -73,13 +77,13 @@ public class StudentPreferencesForm_GUI extends JFrame {
         // Cleanliness Preference
         gbc.gridy = 6;
         panel.add(new JLabel("Cleanliness Preference:"), gbc);
-        cleanlinessPrefCombo = new JComboBox<>(new String[]{"Very Clean", "Moderate", "Not a Priority"});
+        cleanlinessPrefCombo = new JComboBox<>(new String[] { "Very Clean", "Moderate", "Not a Priority" });
         panel.add(cleanlinessPrefCombo, gbc);
 
         // Social Lifestyle
         gbc.gridy = 7;
         panel.add(new JLabel("Social Lifestyle:"), gbc);
-        socialLifestyleCombo = new JComboBox<>(new String[]{"Introverted", "Extroverted", "Flexible"});
+        socialLifestyleCombo = new JComboBox<>(new String[] { "Introverted", "Extroverted", "Flexible" });
         panel.add(socialLifestyleCombo, gbc);
 
         // Allergy Information
@@ -92,13 +96,13 @@ public class StudentPreferencesForm_GUI extends JFrame {
         // Meal Preference
         gbc.gridy = 9;
         panel.add(new JLabel("Meal Preference:"), gbc);
-        mealPreferenceCombo = new JComboBox<>(new String[]{"Vegetarian", "Non-Vegetarian", "Vegan"});
+        mealPreferenceCombo = new JComboBox<>(new String[] { "Vegetarian", "Non-Vegetarian", "Vegan" });
         panel.add(mealPreferenceCombo, gbc);
 
         // Transportation Method
         gbc.gridy = 10;
         panel.add(new JLabel("Transportation Method:"), gbc);
-        transportationMethodCombo = new JComboBox<>(new String[]{"Car", "Bike", "Public Transport", "Walk"});
+        transportationMethodCombo = new JComboBox<>(new String[] { "Car", "Bike", "Public Transport", "Walk" });
         panel.add(transportationMethodCombo, gbc);
 
         // Max Budget for Roommate
@@ -136,19 +140,68 @@ public class StudentPreferencesForm_GUI extends JFrame {
             String maxBudget = maxBudgetField.getText().trim();
 
             // Display the values in a confirmation dialog
-            JOptionPane.showMessageDialog(null, "Student Preferences Saved Successfully!\n"
-                    + "Student ID: " + studentId + "\n"
-                    + "Preferred Rent: " + preferredRent + "\n"
-                    + "Preferred Location: " + preferredLocation + "\n"
-                    + "Has Pets: " + hasPets + "\n"
-                    + "Works at Night: " + worksAtNight + "\n"
-                    + "Max Distance: " + maxDistance + "\n"
-                    + "Cleanliness Preference: " + cleanlinessPreference + "\n"
-                    + "Social Lifestyle: " + socialLifestyle + "\n"
-                    + "Allergy Information: " + allergyInformation + "\n"
-                    + "Meal Preference: " + mealPreference + "\n"
-                    + "Transportation Method: " + transportationMethod + "\n"
-                    + "Max Budget for Roommate: " + maxBudget);
+            /*
+             * JOptionPane.showMessageDialog(null,
+             * "Student Preferences Saved Successfully!\n"
+             * + "Student ID: " + studentId + "\n"
+             * + "Preferred Rent: " + preferredRent + "\n"
+             * + "Preferred Location: " + preferredLocation + "\n"
+             * + "Has Pets: " + hasPets + "\n"
+             * + "Works at Night: " + worksAtNight + "\n"
+             * + "Max Distance: " + maxDistance + "\n"
+             * + "Cleanliness Preference: " + cleanlinessPreference + "\n"
+             * + "Social Lifestyle: " + socialLifestyle + "\n"
+             * + "Allergy Information: " + allergyInformation + "\n"
+             * + "Meal Preference: " + mealPreference + "\n"
+             * + "Transportation Method: " + transportationMethod + "\n"
+             * + "Max Budget for Roommate: " + maxBudget);
+             */
+
+            // Insert into database
+            insertStudentPreferences(studentId, preferredRent, preferredLocation, hasPets, worksAtNight, maxDistance,
+                    cleanlinessPreference, socialLifestyle, allergyInformation, mealPreference, transportationMethod,
+                    maxBudget);
+        }
+    }
+
+    private void insertStudentPreferences(String studentId, String preferredRent, String preferredLocation,
+            boolean hasPets, boolean worksAtNight, String maxDistance,
+            String cleanlinessPreference, String socialLifestyle, String allergyInformation,
+            String mealPreference, String transportationMethod, String maxBudget) {
+
+        // Database connection settings
+
+        DB_Functions db = new DB_Functions();
+
+        // SQL INSERT query
+        String insertQuery = "INSERT INTO student_details (student_id, preferred_rent, preferred_location, has_pets, worksAtNight, "
+                + "max_distance, cleanliness_preference, social_lifestyle, allergy_information, meal_preference, transportation_method, max_budget_for_roommate) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root");
+                PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
+
+            // Set the parameters for the SQL query
+            stmt.setInt(1, Integer.parseInt(studentId));
+            stmt.setInt(2, Integer.parseInt(preferredRent));
+            stmt.setString(3, preferredLocation);
+            stmt.setBoolean(4, hasPets);
+            stmt.setBoolean(5, worksAtNight);
+            stmt.setInt(6, Integer.parseInt(maxDistance));
+            stmt.setString(7, cleanlinessPreference);
+            stmt.setString(8, socialLifestyle);
+            stmt.setString(9, allergyInformation);
+            stmt.setString(10, mealPreference);
+            stmt.setString(11, transportationMethod);
+            stmt.setInt(12, Integer.parseInt(maxBudget));
+
+            // Execute the update
+            stmt.executeUpdate();
+            JOptionPane.showMessageDialog(null, "Preferences saved to database successfully!");
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Error saving preferences to database.\n" + ex.getMessage());
         }
     }
 

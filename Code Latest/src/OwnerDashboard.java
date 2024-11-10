@@ -6,8 +6,10 @@ import java.util.ArrayList;
 public class OwnerDashboard extends JFrame {
     private JTextArea ownerDetailsArea;
     private JPanel propertyPanel;
+    int ownerId = 1;  //get from Session
 
     public OwnerDashboard() {
+
         setTitle("Owner Dashboard");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Set the frame to full screen
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -30,6 +32,8 @@ public class OwnerDashboard extends JFrame {
         ownerInfoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
         // Owner image
+        ImageIcon ownerImage;
+
         JLabel ownerImageLabel = new JLabel("Owner Image"); // Placeholder text
         ownerImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         ownerImageLabel.setPreferredSize(new Dimension(150, 150));
@@ -73,20 +77,20 @@ public class OwnerDashboard extends JFrame {
 
     // Helper method to load data from the database
     private void loadDataFromDatabase() {
-        String url = "jdbc:mysql://localhost:3306/your_database"; // Replace with your DB URL
-        String user = "postgre"; // Replace with your DB username
-        String password = "root"; // Replace with your DB password
 
-        try (Connection conn = DriverManager.getConnection(url, user, password)) {
+        DB_Functions db = new DB_Functions();
+        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
             // Fetch owner details
-            String ownerQuery = "SELECT name, experience, specialization FROM owners WHERE id = 1"; // Adjust query as needed
+            // See at the top :::: int ownerId = 1;  //get from Session
+            String ownerQuery = "SELECT firstname, lastname, email, phone_number , photo FROM users WHERE id = "+ownerId; // Adjust query as
+                                                                                                    // needed
             try (PreparedStatement ownerStmt = conn.prepareStatement(ownerQuery)) {
                 ResultSet ownerRs = ownerStmt.executeQuery();
                 if (ownerRs.next()) {
                     String ownerDetails = "Owner Details:\n"
-                        + "Name: " + ownerRs.getString("name") + "\n"
-                        + "Experience: " + ownerRs.getInt("experience") + " years\n"
-                        + "Specialization: " + ownerRs.getString("specialization");
+                            + "Name: " + ownerRs.getString("firstname") + ownerRs.getString("lastname")+ "\n"
+                            + "Phone Number: " + ownerRs.getInt("phone_number") + "\n"
+                            + "Email: " + ownerRs.getString("email");
                     ownerDetailsArea.setText(ownerDetails);
                 }
             }
@@ -102,7 +106,8 @@ public class OwnerDashboard extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading data from database.", "Database Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading data from database.", "Database Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
