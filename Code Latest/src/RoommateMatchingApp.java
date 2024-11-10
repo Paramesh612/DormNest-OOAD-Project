@@ -52,10 +52,16 @@ public class RoommateMatchingApp extends JFrame {
             HashMap<String, Object> currentUser = extractStudentData(currentUserRs);
 
             // Fetch other students' details and calculate matching scores
+// Use aliases to avoid ambiguity
             String allStudentsQuery = """
-                SELECT u.user_id, u.firstname, u.lastname, u.phone_number, u.email, u.photo, s.*
-                FROM student_details s JOIN users u ON s.student_id = u.user_id WHERE s.student_id != ?
-            """;
+                SELECT u.user_id AS user_id, u.firstname AS firstname, u.lastname AS lastname,
+                       u.phone_number AS phone_number, u.email AS email, u.photo AS photo, 
+                       s.* 
+                FROM student_details s
+                JOIN users u ON s.student_id = u.user_id
+                WHERE s.student_id != ?
+                """;
+
             PreparedStatement ps = conn.prepareStatement(allStudentsQuery);
             ps.setInt(1, currentUserId);
             ResultSet rs = ps.executeQuery();

@@ -82,21 +82,29 @@ public class OwnerDashboard extends JFrame {
         try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
             // Fetch owner details
             // See at the top :::: int ownerId = 1;  //get from Session
-            String ownerQuery = "SELECT firstname, lastname, email, phone_number , photo FROM users WHERE id = "+ownerId; // Adjust query as
-                                                                                                    // needed
+
+            if(conn==null){
+                JOptionPane.showMessageDialog(null,"Connection is NULL");
+            }
+
+            String ownerQuery = "SELECT firstname, lastname, email, phone_number , photo FROM users WHERE user_id = "+ownerId; // Adjust query as
             try (PreparedStatement ownerStmt = conn.prepareStatement(ownerQuery)) {
                 ResultSet ownerRs = ownerStmt.executeQuery();
+
+                if(ownerRs==null){
+                    JOptionPane.showMessageDialog(null,"RS is Null");
+                }
                 if (ownerRs.next()) {
                     String ownerDetails = "Owner Details:\n"
                             + "Name: " + ownerRs.getString("firstname") + ownerRs.getString("lastname")+ "\n"
-                            + "Phone Number: " + ownerRs.getInt("phone_number") + "\n"
+                            + "Phone Number: " + ownerRs.getLong("phone_number") + "\n"
                             + "Email: " + ownerRs.getString("email");
                     ownerDetailsArea.setText(ownerDetails);
                 }
             }
 
             // Fetch property listings
-            String propertyQuery = "SELECT description FROM properties WHERE owner_id = 1"; // Adjust query as needed
+            String propertyQuery = "SELECT owner_note FROM accommodation WHERE user_id = 1"; // Adjust query as needed
             try (PreparedStatement propertyStmt = conn.prepareStatement(propertyQuery)) {
                 ResultSet propertyRs = propertyStmt.executeQuery();
                 while (propertyRs.next()) {
@@ -106,7 +114,7 @@ public class OwnerDashboard extends JFrame {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading data from database.", "Database Error",
+            JOptionPane.showMessageDialog(this, "Error loading data from database.\n"+e.getMessage(), "Database Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
