@@ -17,7 +17,8 @@ CREATE TABLE accommodation (
     accommodation_address TEXT,
     status VARCHAR(20),  -- 'vacant' or 'not vacant'
     numRooms INTEGER,
-    rent DECIMAL(10, 2)
+    rent DECIMAL(10, 2),
+    owner_note TEXT
 );
 
 CREATE TABLE student_details (
@@ -56,5 +57,10 @@ CREATE TABLE requests (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-
-
+CREATE TABLE accommodation_images (
+    image_id SERIAL PRIMARY KEY,
+    accommodation_id INTEGER REFERENCES accommodation(accommodation_id) ON DELETE CASCADE,
+    image_data BYTEA,  -- Store image data as binary
+    image_description VARCHAR(255),  -- Optional: Description of the image
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
