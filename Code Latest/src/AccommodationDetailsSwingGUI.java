@@ -105,9 +105,10 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         String user = "your_username";
         String password = "your_password";
 
-        try (Connection conn = DriverManager.getConnection(url, user, password);
+        DB_Functions db = new DB_Functions();
+        try (Connection conn = db.connect_to_db(url, user, password)){
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT description, location, price, amenities, availability, owner_note, images FROM Accommodation WHERE id = ?")) {
+                     "SELECT description, location, price, amenities, availability, owner_note, images FROM Accommodation WHERE id = ?");
 
             stmt.setInt(1, accommodationId);
             ResultSet rs = stmt.executeQuery();
