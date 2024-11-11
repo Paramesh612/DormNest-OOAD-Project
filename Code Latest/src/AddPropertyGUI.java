@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class AddPropertyGUI extends JFrame {
     private JTextField nameField, priceField, numPeopleField;
-    private JTextArea ownerNoteArea,addressField;
+    private JTextArea ownerNoteArea, addressField;
     private JButton imageButton, submitButton;
     private JPanel imageDisplayPanel;
     private ArrayList<File> selectedFiles = new ArrayList<>();
@@ -127,7 +127,8 @@ public class AddPropertyGUI extends JFrame {
 
     private void addImageThumbnail(File file) {
         // Create a scaled thumbnail and add it to imageDisplayPanel
-        ImageIcon icon = new ImageIcon(new ImageIcon(file.getAbsolutePath()).getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
+        ImageIcon icon = new ImageIcon(
+                new ImageIcon(file.getAbsolutePath()).getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
         JLabel thumbnailLabel = new JLabel(icon);
         imageDisplayPanel.add(thumbnailLabel);
         imageDisplayPanel.revalidate();
@@ -138,7 +139,7 @@ public class AddPropertyGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             DB_Functions db = new DB_Functions();
-            try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
+            try (Connection conn = db.connect_to_db()) {
 
                 if (conn == null) {
                     JOptionPane.showMessageDialog(null, "Failed to connect to the database.");

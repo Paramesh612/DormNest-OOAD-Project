@@ -160,7 +160,7 @@ public class RegistrationForm_GUI extends JFrame {
     private void registerUser(String firstName, String lastName, String userName, String email, String hashedPassword,
             String userType) {
         DB_Functions db = new DB_Functions();
-        Connection conn = db.connect_to_db("DormNest", "postgres", "root");
+        Connection conn = db.connect_to_db();
 
         String sql = "INSERT INTO users (firstname, lastname, username, email, password, user_type) VALUES (?, ?, ?, ?, ?, ?)";
 

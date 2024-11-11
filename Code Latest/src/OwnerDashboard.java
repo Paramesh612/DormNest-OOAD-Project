@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class OwnerDashboard extends JFrame {
     private JTextArea ownerDetailsArea;
     private JPanel propertyPanel;
-    int ownerId = 1;  //get from Session
+    int ownerId = 1; // get from Session
 
     public OwnerDashboard() {
 
@@ -79,24 +79,25 @@ public class OwnerDashboard extends JFrame {
     private void loadDataFromDatabase() {
 
         DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
+        try (Connection conn = db.connect_to_db()) {
             // Fetch owner details
-            // See at the top :::: int ownerId = 1;  //get from Session
+            // See at the top :::: int ownerId = 1; //get from Session
 
-            if(conn==null){
-                JOptionPane.showMessageDialog(null,"Connection is NULL");
+            if (conn == null) {
+                JOptionPane.showMessageDialog(null, "Connection is NULL");
             }
 
-            String ownerQuery = "SELECT firstname, lastname, email, phone_number , photo FROM users WHERE user_id = "+ownerId; // Adjust query as
+            String ownerQuery = "SELECT firstname, lastname, email, phone_number , photo FROM users WHERE user_id = "
+                    + ownerId; // Adjust query as
             try (PreparedStatement ownerStmt = conn.prepareStatement(ownerQuery)) {
                 ResultSet ownerRs = ownerStmt.executeQuery();
 
-                if(ownerRs==null){
-                    JOptionPane.showMessageDialog(null,"RS is Null");
+                if (ownerRs == null) {
+                    JOptionPane.showMessageDialog(null, "RS is Null");
                 }
                 if (ownerRs.next()) {
                     String ownerDetails = "Owner Details:\n"
-                            + "Name: " + ownerRs.getString("firstname") + ownerRs.getString("lastname")+ "\n"
+                            + "Name: " + ownerRs.getString("firstname") + ownerRs.getString("lastname") + "\n"
                             + "Phone Number: " + ownerRs.getLong("phone_number") + "\n"
                             + "Email: " + ownerRs.getString("email");
                     ownerDetailsArea.setText(ownerDetails);
@@ -112,23 +113,27 @@ public class OwnerDashboard extends JFrame {
                     int rooms = propertyRs.getInt("rooms");
                     String address = propertyRs.getString("address");
                     double rent = propertyRs.getDouble("rent");
-                    ImageIcon propertyImage = new ImageIcon(propertyRs.getString("image_path")); // Assumes image path is stored
+                    ImageIcon propertyImage = new ImageIcon(propertyRs.getString("image_path")); // Assumes image path
+                                                                                                 // is stored
 
                     addPropertyCard(propertyName, rooms, address, rent, propertyImage);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading data from database.\n"+e.getMessage(), "Database Error",
+            JOptionPane.showMessageDialog(this, "Error loading data from database.\n" + e.getMessage(),
+                    "Database Error",
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
     private void addPropertyCard(String name, int rooms, String address, double rent, ImageIcon image) {
         PropertyCard propertyCard = new PropertyCard(name, rooms, address, rent, image);
         propertyPanel.add(propertyCard);
         propertyPanel.add(Box.createVerticalStrut(10)); // Space between cards
         propertyPanel.revalidate(); // Refresh panel to show new listings
     }
+
     // Helper method to add a property listing with a border
     private void addPropertyListing(String propertyDetails) {
         JLabel propertyLabel = new JLabel(propertyDetails);

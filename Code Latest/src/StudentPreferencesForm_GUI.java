@@ -29,7 +29,6 @@ public class StudentPreferencesForm_GUI extends JFrame {
         studentIdField.setText("Get from session");
         panel.add(studentIdField, gbc);
 
-
         // Preferred Rent
         gbc.gridy = 1;
         panel.add(new JLabel("Preferred Rent:"), gbc);
@@ -178,7 +177,7 @@ public class StudentPreferencesForm_GUI extends JFrame {
                 + "max_distance, cleanliness_preference, social_lifestyle, allergy_information, meal_preference, transportation_method, max_budget_for_roommate) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root");
+        try (Connection conn = db.connect_to_db();
                 PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
 
             // Set the parameters for the SQL query

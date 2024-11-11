@@ -39,12 +39,12 @@ public class StudentNotificationGUI extends JFrame {
     private List<HashMap<String, Object>> fetchNotifications(int currentUserId) {
         List<HashMap<String, Object>> notifications = new ArrayList<>();
         DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
+        try (Connection conn = db.connect_to_db()) {
             String query = """
-                SELECT r.request_id, u.user_id, u.firstname, u.lastname, u.phone_number, u.email, u.photo
-                FROM requests r JOIN users u ON r.sender_id = u.user_id
-                WHERE r.recipient_id = ? AND r.status = 'pending'
-            """;
+                        SELECT r.request_id, u.user_id, u.firstname, u.lastname, u.phone_number, u.email, u.photo
+                        FROM requests r JOIN users u ON r.sender_id = u.user_id
+                        WHERE r.recipient_id = ? AND r.status = 'pending'
+                    """;
             PreparedStatement ps = conn.prepareStatement(query);
             ps.setInt(1, currentUserId);
             ResultSet rs = ps.executeQuery();
@@ -113,7 +113,7 @@ public class StudentNotificationGUI extends JFrame {
 
     private void acceptRequest(int requestId) {
         DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
+        try (Connection conn = db.connect_to_db()) {
             String updateStatus = "UPDATE requests SET status = 'accepted' WHERE request_id = ?";
             PreparedStatement ps = conn.prepareStatement(updateStatus);
             ps.setInt(1, requestId);
@@ -130,4 +130,3 @@ public class StudentNotificationGUI extends JFrame {
         SwingUtilities.invokeLater(StudentNotificationGUI::new);
     }
 }
-

@@ -40,7 +40,7 @@ public class RoommateMatchingApp extends JFrame {
     private List<HashMap<String, Object>> fetchMatchedStudents(int currentUserId) {
         List<HashMap<String, Object>> matchedStudents = new ArrayList<>();
         DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
+        try (Connection conn = db.connect_to_db()) {
             // Fetch current user details
             String currentUserQuery = "SELECT * FROM student_details WHERE student_id = ?";
             PreparedStatement currentUserPs = conn.prepareStatement(currentUserQuery);
@@ -52,15 +52,15 @@ public class RoommateMatchingApp extends JFrame {
             HashMap<String, Object> currentUser = extractStudentData(currentUserRs);
 
             // Fetch other students' details and calculate matching scores
-// Use aliases to avoid ambiguity
+            // Use aliases to avoid ambiguity
             String allStudentsQuery = """
-                SELECT u.user_id AS user_id, u.firstname AS firstname, u.lastname AS lastname,
-                       u.phone_number AS phone_number, u.email AS email, u.photo AS photo, 
-                       s.* 
-                FROM student_details s
-                JOIN users u ON s.student_id = u.user_id
-                WHERE s.student_id != ?
-                """;
+                    SELECT u.user_id AS user_id, u.firstname AS firstname, u.lastname AS lastname,
+                           u.phone_number AS phone_number, u.email AS email, u.photo AS photo,
+                           s.*
+                    FROM student_details s
+                    JOIN users u ON s.student_id = u.user_id
+                    WHERE s.student_id != ?
+                    """;
 
             PreparedStatement ps = conn.prepareStatement(allStudentsQuery);
             ps.setInt(1, currentUserId);
@@ -182,11 +182,11 @@ public class RoommateMatchingApp extends JFrame {
 
     private void sendRequest(int recipientId) {
         DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db("DormNest", "postgres", "root")) {
+        try (Connection conn = db.connect_to_db()) {
             String insertRequest = """
-                INSERT INTO requests (sender_id, recipient_id, request_type, status)
-                VALUES (?, ?, 'roommate_request', 'pending')
-            """;
+                        INSERT INTO requests (sender_id, recipient_id, request_type, status)
+                        VALUES (?, ?, 'roommate_request', 'pending')
+                    """;
             PreparedStatement ps = conn.prepareStatement(insertRequest);
             ps.setInt(1, getCurrentUserId()); // Sender's user ID
             ps.setInt(2, recipientId);

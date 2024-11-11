@@ -80,7 +80,7 @@ public class Login_GUI {
 
             // Connect to the database
             DB_Functions dbfunc = new DB_Functions();
-            try (Connection conn = dbfunc.connect_to_db("DormNest", "postgres", "root")) {
+            try (Connection conn = dbfunc.connect_to_db()) {
                 // Prepare the query to prevent SQL injection
                 String query = "SELECT password FROM users WHERE username = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
