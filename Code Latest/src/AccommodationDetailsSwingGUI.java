@@ -12,7 +12,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     private JLabel availabilityLabel;
     private JTextArea ownerNoteTextArea;
     private List<ImageIcon> images;
-    private JPanel imagePanel;  // Panel to hold image list
+    private JPanel imagePanel; // Panel to hold image list
 
     public AccommodationDetailsSwingGUI() {
         setTitle("Accommodation Details");
@@ -69,8 +69,8 @@ public class AccommodationDetailsSwingGUI extends JFrame {
 
         // Set up the SplitPane (Image panel on the left, Details panel on the right)
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, imagePanel, detailsScrollPane);
-        splitPane.setDividerLocation(400);  // Adjust the initial divider position to accommodate the smaller image panel
-        splitPane.setResizeWeight(0.3);  // Makes the panels resizable, image panel will take 30% of the space
+        splitPane.setDividerLocation(400); // Adjust the initial divider position to accommodate the smaller image panel
+        splitPane.setResizeWeight(0.3); // Makes the panels resizable, image panel will take 30% of the space
 
         // Set the split pane divider to start at 400px from the left
         centerPanel.add(splitPane, BorderLayout.CENTER);
@@ -102,9 +102,9 @@ public class AccommodationDetailsSwingGUI extends JFrame {
 
     private void loadAccommodationDetails(int accommodationId) {
         DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db("DormNest","postgres", "root")){
-             PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT owner_note, location, price, amenities, availability, owner_note, images FROM Accommodation WHERE id = ?");
+        try (Connection conn = db.connect_to_db()) {
+            PreparedStatement stmt = conn.prepareStatement(
+                    "SELECT owner_note, location, price, amenities, availability, owner_note, images FROM Accommodation WHERE id = ?");
 
             stmt.setInt(1, accommodationId);
             ResultSet rs = stmt.executeQuery();
@@ -131,7 +131,8 @@ public class AccommodationDetailsSwingGUI extends JFrame {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading accommodation details.\n"+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading accommodation details.\n" + e.getMessage(), "Error",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
