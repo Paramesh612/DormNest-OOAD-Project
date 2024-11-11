@@ -101,20 +101,16 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     }
 
     private void loadAccommodationDetails(int accommodationId) {
-        String url = "jdbc:postgresql://localhost:5432/your_database";
-        String user = "your_username";
-        String password = "your_password";
-
         DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db(url, user, password)){
+        try (Connection conn = db.connect_to_db("DormNest","postgres", "root")){
              PreparedStatement stmt = conn.prepareStatement(
-                     "SELECT description, location, price, amenities, availability, owner_note, images FROM Accommodation WHERE id = ?");
+                     "SELECT owner_note, location, price, amenities, availability, owner_note, images FROM Accommodation WHERE id = ?");
 
             stmt.setInt(1, accommodationId);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                descriptionLabel.setText("Description: " + rs.getString("description"));
+                descriptionLabel.setText("Owner's Note: " + rs.getString("owner_note"));
                 locationLabel.setText("Location: " + rs.getString("location"));
                 priceLabel.setText("Price: $" + rs.getDouble("price"));
                 amenitiesLabel.setText("Amenities: " + rs.getString("amenities"));
@@ -135,7 +131,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading accommodation details.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error loading accommodation details.\n"+e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
