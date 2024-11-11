@@ -5,97 +5,108 @@ import java.util.List;
 import javax.swing.*;
 
 public class AccommodationDetailsSwingGUI extends JFrame {
-    private JLabel descriptionLabel;
+    private JLabel titleLabel;
+    private JLabel nameLabel;
     private JLabel locationLabel;
-    private JLabel priceLabel;
-    private JLabel amenitiesLabel;
+    private JLabel rentLabel;
+    private JLabel numRoomsLabel;
     private JLabel availabilityLabel;
     private JTextArea ownerNoteTextArea;
     private List<ImageIcon> images;
-    private JPanel imagePanel; // Panel to hold image list
+    private JPanel imagePanel;
 
     public AccommodationDetailsSwingGUI() {
         setTitle("Accommodation Details");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // Full screen
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
 
-        // Initialize components
-        descriptionLabel = new JLabel("Description: ");
-        locationLabel = new JLabel("Location: ");
-        priceLabel = new JLabel("Price: ");
-        amenitiesLabel = new JLabel("Amenities: ");
-        availabilityLabel = new JLabel("Availability: ");
-        ownerNoteTextArea = new JTextArea(5, 30);
+        Font titleFont = new Font("Arial", Font.BOLD, 24);
+        Font labelFont = new Font("Arial", Font.PLAIN, 18);
+        Font textAreaFont = new Font("Arial", Font.PLAIN, 16);
 
-        // Center panel for image display and details
+        // Title Label at the top center
+        titleLabel = new JLabel("Accommodation Details", SwingConstants.CENTER);
+        titleLabel.setFont(titleFont);
+
+        nameLabel = new JLabel("Name: ");
+        nameLabel.setFont(labelFont);
+        locationLabel = new JLabel("Location: ");
+        locationLabel.setFont(labelFont);
+        rentLabel = new JLabel("Rent: ");
+        rentLabel.setFont(labelFont);
+        numRoomsLabel = new JLabel("Number of Rooms: ");
+        numRoomsLabel.setFont(labelFont);
+        availabilityLabel = new JLabel("Availability: ");
+        availabilityLabel.setFont(labelFont);
+        ownerNoteTextArea = new JTextArea(5, 30);
+        ownerNoteTextArea.setFont(textAreaFont);
+
         JPanel centerPanel = new JPanel(new BorderLayout());
 
-        // Image panel that will contain all images as a list
+        // Image panel with vertical BoxLayout for scrolling
         imagePanel = new JPanel();
-        imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.Y_AXIS)); // Use Y_AXIS for a vertical list
+        imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.Y_AXIS));
 
-        // Details panel for text fields with individual panels for each detail
-        JPanel detailsPanel = new JPanel();
-        detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
-        detailsPanel.setPreferredSize(new Dimension(500, 600)); // Increased size for details panel
+        JScrollPane imageScrollPane = new JScrollPane(imagePanel);
+        imageScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        imageScrollPane.setPreferredSize(new Dimension(600, 600));
 
-        // Create individual panels for each detail
-        JPanel descriptionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        descriptionPanel.add(descriptionLabel);
+        // Use GridBagLayout for the details panel
+        JPanel detailsPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 0, 5, 0); // Add vertical space between components
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.gridx = 0; // Start with the first column
 
-        JPanel locationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        locationPanel.add(locationLabel);
+        // Name label
+        gbc.gridy = 0;
+        detailsPanel.add(nameLabel, gbc);
 
-        JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        pricePanel.add(priceLabel);
+        // Location label
+        gbc.gridy = 1;
+        detailsPanel.add(locationLabel, gbc);
 
-        JPanel amenitiesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        amenitiesPanel.add(amenitiesLabel);
+        // Rent label
+        gbc.gridy = 2;
+        detailsPanel.add(rentLabel, gbc);
 
-        JPanel availabilityPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        availabilityPanel.add(availabilityLabel);
+        // Number of Rooms label
+        gbc.gridy = 3;
+        detailsPanel.add(numRoomsLabel, gbc);
 
-        // Add each panel to the detailsPanel
-        detailsPanel.add(descriptionPanel);
-        detailsPanel.add(locationPanel);
-        detailsPanel.add(pricePanel);
-        detailsPanel.add(amenitiesPanel);
-        detailsPanel.add(availabilityPanel);
+        // Availability label
+        gbc.gridy = 4;
+        detailsPanel.add(availabilityLabel, gbc);
 
-        // Scrollable panel for details section (optional)
+        // Scrollable area for the details panel
         JScrollPane detailsScrollPane = new JScrollPane(detailsPanel);
-        detailsScrollPane.setPreferredSize(new Dimension(500, 600)); // Set a preferred size for the scroll pane
+        detailsScrollPane.setPreferredSize(new Dimension(400, 600));
 
-        // Set up the SplitPane (Image panel on the left, Details panel on the right)
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, imagePanel, detailsScrollPane);
-        splitPane.setDividerLocation(400); // Adjust the initial divider position to accommodate the smaller image panel
-        splitPane.setResizeWeight(0.3); // Makes the panels resizable, image panel will take 30% of the space
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, imageScrollPane, detailsScrollPane);
+        splitPane.setDividerLocation(400);
+        splitPane.setResizeWeight(0.3);
 
-        // Set the split pane divider to start at 400px from the left
         centerPanel.add(splitPane, BorderLayout.CENTER);
 
-        // Owner's note panel
         JPanel ownerNotePanel = new JPanel();
         ownerNotePanel.setLayout(new BorderLayout());
         ownerNotePanel.add(new JLabel("Owner's Note:"), BorderLayout.NORTH);
         ownerNotePanel.add(new JScrollPane(ownerNoteTextArea), BorderLayout.CENTER);
 
-        // Button panel for send request button
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton sendRequestButton = new JButton("Send Request");
+        sendRequestButton.setPreferredSize(new Dimension(150, 50));
+        sendRequestButton.setFont(new Font("Arial", Font.BOLD, 16));
         buttonPanel.add(sendRequestButton);
 
-        // Add panels to frame
+        add(titleLabel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
         add(ownerNotePanel, BorderLayout.SOUTH);
         add(buttonPanel, BorderLayout.PAGE_END);
 
-        // Set up action listener for the button
         sendRequestButton.addActionListener(e -> sendRequest());
-
-        // Load data from database
-        loadAccommodationDetails(1); // Pass the ID of the accommodation you want to load
+        loadAccommodationDetails(12);
 
         setVisible(true);
     }
@@ -104,31 +115,39 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
             PreparedStatement stmt = conn.prepareStatement(
-                    "SELECT owner_note, location, price, amenities, availability, owner_note, images FROM Accommodation WHERE id = ?");
-
+                    "SELECT *, "
+                            + "(SELECT array_agg(image_data) FROM accommodation_images WHERE accommodation_id = accommodation.accommodation_id) AS images "
+                            + "FROM accommodation WHERE accommodation_id = ?");
             stmt.setInt(1, accommodationId);
             ResultSet rs = stmt.executeQuery();
-
             if (rs.next()) {
-                descriptionLabel.setText("Owner's Note: " + rs.getString("owner_note"));
-                locationLabel.setText("Location: " + rs.getString("location"));
-                priceLabel.setText("Price: $" + rs.getDouble("price"));
-                amenitiesLabel.setText("Amenities: " + rs.getString("amenities"));
-                availabilityLabel.setText("Availability: " + rs.getString("availability"));
+                nameLabel.setText("Name: " + rs.getString("accommodation_name"));
+                locationLabel.setText("Location: " + rs.getString("accommodation_address"));
+                rentLabel.setText("<html><span style='color: darkgreen;'>Rent: $" + rs.getDouble("rent") + "</span></html>");
+                numRoomsLabel.setText("Number of Rooms: " + rs.getInt("numrooms"));
+                String availability = rs.getString("status");
+                availabilityLabel.setText("Availability: " + availability);
+                if ("vacant".equalsIgnoreCase(availability)) {
+                    availabilityLabel.setForeground(Color.GREEN);
+                } else {
+                    availabilityLabel.setForeground(Color.RED);
+                }
                 ownerNoteTextArea.setText(rs.getString("owner_note"));
 
-                // Load images
-                String[] imagePaths = rs.getString("images").split(","); // assuming comma-separated paths
-                images = new ArrayList<>();
-                for (String path : imagePaths) {
-                    images.add(new ImageIcon(path.trim()));
-                }
-
-                if (!images.isEmpty()) {
-                    displayImageList(); // Display all images in the panel
+                Array imagesData = rs.getArray("images");
+                if (imagesData != null) {
+                    byte[][] imageBytesArray = (byte[][]) imagesData.getArray();
+                    images = new ArrayList<>();
+                    for (byte[] imageBytes : imageBytesArray) {
+                        ImageIcon imageIcon = new ImageIcon(imageBytes);
+                        Image scaledImage = imageIcon.getImage().getScaledInstance(400, -1, Image.SCALE_SMOOTH);
+                        images.add(new ImageIcon(scaledImage));
+                    }
+                    if (!images.isEmpty()) {
+                        displayImageList();
+                    }
                 }
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error loading accommodation details.\n" + e.getMessage(), "Error",
@@ -137,22 +156,18 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     }
 
     private void displayImageList() {
-        // Clear the previous images from the image panel
         imagePanel.removeAll();
-
-        // Add each image as a JLabel in the image panel
         for (ImageIcon image : images) {
-            JLabel imageLabel = new JLabel(image);
-            imagePanel.add(imageLabel);
+            Image scaled = image.getImage().getScaledInstance((int)Math.round(image.getIconWidth()*(1.5)),(int)Math.round(image.getIconHeight()*(1.5)),0);
+            JLabel scaledImageLabel = new JLabel(new ImageIcon(scaled));
+            imagePanel.add(scaledImageLabel);
+            imagePanel.add(Box.createRigidArea(new Dimension(10, 10))); // Adds spacing between images
         }
-
-        // Refresh the image panel to reflect changes
         imagePanel.revalidate();
         imagePanel.repaint();
     }
 
     private void sendRequest() {
-        // Implement functionality for the send request action here
         JOptionPane.showMessageDialog(this, "Request sent!", "Info", JOptionPane.INFORMATION_MESSAGE);
     }
 
