@@ -180,6 +180,6 @@ public class StudentHomePageGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-         new StudentHomePageGUI(2);
+         new StudentHomePageGUI(1);
     }
 }
