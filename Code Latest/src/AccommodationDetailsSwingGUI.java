@@ -5,6 +5,9 @@ import java.util.List;
 import javax.swing.*;
 
 public class AccommodationDetailsSwingGUI extends JFrame {
+    int userID;
+    int recipientId;
+
     private JLabel titleLabel;
     private JLabel nameLabel;
     private JLabel locationLabel;
@@ -15,7 +18,11 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     private List<ImageIcon> images;
     private JPanel imagePanel;
 
-    public AccommodationDetailsSwingGUI() {
+
+    public AccommodationDetailsSwingGUI( int UserID ) {
+
+        this.userID = UserID;
+
         setTitle("Accommodation Details");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -41,6 +48,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         availabilityLabel.setFont(labelFont);
         ownerNoteTextArea = new JTextArea(5, 30);
         ownerNoteTextArea.setFont(textAreaFont);
+        ownerNoteTextArea.setEditable(false);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
 
@@ -102,7 +110,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
 
         add(titleLabel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
-        add(ownerNotePanel, BorderLayout.SOUTH);
+        add(ownerNotePanel, BorderLayout.EAST);
         add(buttonPanel, BorderLayout.PAGE_END);
 
         sendRequestButton.addActionListener(e -> sendRequest());
@@ -133,6 +141,8 @@ public class AccommodationDetailsSwingGUI extends JFrame {
                     availabilityLabel.setForeground(Color.RED);
                 }
                 ownerNoteTextArea.setText(rs.getString("owner_note"));
+
+                recipientId = rs.getInt("user_id");
 
                 Array imagesData = rs.getArray("images");
                 if (imagesData != null) {
@@ -168,10 +178,19 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     }
 
     private void sendRequest() {
-        JOptionPane.showMessageDialog(this, "Request sent!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        DB_Functions db = new DB_Functions();
+        String query = String.format("Insert into requests (sender_id,recipient_id,request_type,status,request_message) values(%d,%d,'accommodation_inquiry','pending','');",userID, recipientId);
+        try(Connection conn = db.connect_to_db();
+        Statement st = conn.createStatement()){
+            st.executeUpdate(query);
+            JOptionPane.showMessageDialog(this, "Request sent!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        }catch (Exception e){
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(AccommodationDetailsSwingGUI::new);
+        new AccommodationDetailsSwingGUI(1);
     }
 }

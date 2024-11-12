@@ -7,7 +7,7 @@ public class OwnerDashboard extends JFrame {
     private JTextArea ownerDetailsArea;
     private JPanel propertyPanel;
     int ownerId = 1; // get from Session
-
+    JLabel ownerImageLabel;
     public OwnerDashboard() {
 
         setTitle("Owner Dashboard");
@@ -33,8 +33,7 @@ public class OwnerDashboard extends JFrame {
 
         // Owner image
         ImageIcon ownerImage;
-
-        JLabel ownerImageLabel = new JLabel("Owner Image"); // Placeholder text
+        ownerImageLabel = new JLabel("Owner Image"); // Placeholder text
         ownerImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         ownerImageLabel.setPreferredSize(new Dimension(150, 150));
         ownerImageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -80,41 +79,55 @@ public class OwnerDashboard extends JFrame {
 
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
-            // Fetch owner details
-            // See at the top :::: int ownerId = 1; //get from Session
-
             if (conn == null) {
                 JOptionPane.showMessageDialog(null, "Connection is NULL");
             }
 
-            String ownerQuery = "SELECT firstname, lastname, email, phone_number , photo FROM users WHERE user_id = "
-                    + ownerId; // Adjust query as
+            // Fetch owner details
+            String ownerQuery = "SELECT firstname, lastname, email, phone_number, photo FROM users WHERE user_id = ?";
             try (PreparedStatement ownerStmt = conn.prepareStatement(ownerQuery)) {
+                ownerStmt.setInt(1, ownerId); // Use ownerId from session
                 ResultSet ownerRs = ownerStmt.executeQuery();
 
-                if (ownerRs == null) {
-                    JOptionPane.showMessageDialog(null, "RS is Null");
-                }
                 if (ownerRs.next()) {
                     String ownerDetails = "Owner Details:\n"
-                            + "Name: " + ownerRs.getString("firstname") + ownerRs.getString("lastname") + "\n"
-                            + "Phone Number: " + ownerRs.getLong("phone_number") + "\n"
+                            + "Name: " + ownerRs.getString("firstname") + " " + ownerRs.getString("lastname") + "\n"
+                            + "Phone Number: " + ownerRs.getString("phone_number") + "\n"
                             + "Email: " + ownerRs.getString("email");
                     ownerDetailsArea.setText(ownerDetails);
+                    // Retrieve and set image (assuming photo is stored as binary data)
+                    byte[] imageData = ownerRs.getBytes("photo");
+                    if (imageData != null) {
+                        ImageIcon ownerImage = new ImageIcon(imageData);
+                        ownerImageLabel.setIcon(ownerImage);
+                    }
                 }
             }
 
             // Fetch property listings
-            String propertyQuery = "SELECT property_name, rooms, address, rent, image_path FROM accommodation WHERE user_id = 1";
+            String propertyQuery = "SELECT accommodation_name, numRooms, accommodation_address, rent FROM accommodation WHERE user_id = ?";
             try (PreparedStatement propertyStmt = conn.prepareStatement(propertyQuery)) {
+                propertyStmt.setInt(1, ownerId);
                 ResultSet propertyRs = propertyStmt.executeQuery();
                 while (propertyRs.next()) {
-                    String propertyName = propertyRs.getString("property_name");
-                    int rooms = propertyRs.getInt("rooms");
-                    String address = propertyRs.getString("address");
+                    String propertyName = propertyRs.getString("accommodation_name");
+                    int rooms = propertyRs.getInt("numRooms");
+                    String address = propertyRs.getString("accommodation_address");
                     double rent = propertyRs.getDouble("rent");
-                    ImageIcon propertyImage = new ImageIcon(propertyRs.getString("image_path")); // Assumes image path
-                                                                                                 // is stored
+
+                    // Fetch property image (assuming first image only for simplicity)
+                    ImageIcon propertyImage = null;
+                    String imageQuery = "SELECT image_data FROM accommodation_images WHERE accommodation_id = (SELECT accommodation_id FROM accommodation WHERE user_id = ? LIMIT 1)";
+                    try (PreparedStatement imageStmt = conn.prepareStatement(imageQuery)) {
+                        imageStmt.setInt(1, ownerId);
+                        ResultSet imageRs = imageStmt.executeQuery();
+                        if (imageRs.next()) {
+                            byte[] imageData = imageRs.getBytes("image_data");
+                            if (imageData != null) {
+                                propertyImage = new ImageIcon(imageData);
+                            }
+                        }
+                    }
 
                     addPropertyCard(propertyName, rooms, address, rent, propertyImage);
                 }
@@ -131,17 +144,6 @@ public class OwnerDashboard extends JFrame {
         PropertyCard propertyCard = new PropertyCard(name, rooms, address, rent, image);
         propertyPanel.add(propertyCard);
         propertyPanel.add(Box.createVerticalStrut(10)); // Space between cards
-        propertyPanel.revalidate(); // Refresh panel to show new listings
-    }
-
-    // Helper method to add a property listing with a border
-    private void addPropertyListing(String propertyDetails) {
-        JLabel propertyLabel = new JLabel(propertyDetails);
-        propertyLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        propertyLabel.setPreferredSize(new Dimension(600, 50)); // Width and height for each property entry
-        propertyLabel.setMaximumSize(new Dimension(600, 50)); // Ensure consistent height for each listing
-        propertyPanel.add(propertyLabel);
-        propertyPanel.add(Box.createVerticalStrut(10)); // Space between listings
         propertyPanel.revalidate(); // Refresh panel to show new listings
     }
 
