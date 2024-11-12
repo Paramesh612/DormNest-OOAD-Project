@@ -1,3 +1,4 @@
+
 import java.awt.*;
 import java.sql.*;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import javax.swing.*;
 public class AccommodationDetailsSwingGUI extends JFrame {
 
     int userID;
+    int recipientId;
     int accommodationID;
 
     private JLabel titleLabel;
@@ -19,10 +21,9 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     private List<ImageIcon> images;
     private JPanel imagePanel;
 
-
     public AccommodationDetailsSwingGUI(int userID, int accommodationID) {
-        this.accommodationID=accommodationID;
-        this.userID=userID;
+        this.accommodationID = accommodationID;
+        this.userID = userID;
 
         setTitle("Accommodation Details");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,6 +50,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         availabilityLabel.setFont(labelFont);
         ownerNoteTextArea = new JTextArea(5, 30);
         ownerNoteTextArea.setFont(textAreaFont);
+        ownerNoteTextArea.setEditable(false);
 
         JPanel centerPanel = new JPanel(new BorderLayout());
 
@@ -110,7 +112,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
 
         add(titleLabel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
-        add(ownerNotePanel, BorderLayout.SOUTH);
+        add(ownerNotePanel, BorderLayout.EAST);
         add(buttonPanel, BorderLayout.PAGE_END);
 
         sendRequestButton.addActionListener(e -> sendRequest());
@@ -124,8 +126,8 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         try (Connection conn = db.connect_to_db()) {
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT *, "
-                            + "(SELECT array_agg(image_data) FROM accommodation_images WHERE accommodation_id = accommodation.accommodation_id) AS images "
-                            + "FROM accommodation WHERE accommodation_id = ?");
+                    + "(SELECT array_agg(image_data) FROM accommodation_images WHERE accommodation_id = accommodation.accommodation_id) AS images "
+                    + "FROM accommodation WHERE accommodation_id = ?");
             stmt.setInt(1, accommodationID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
@@ -141,6 +143,8 @@ public class AccommodationDetailsSwingGUI extends JFrame {
                     availabilityLabel.setForeground(Color.RED);
                 }
                 ownerNoteTextArea.setText(rs.getString("owner_note"));
+
+                recipientId = rs.getInt("user_id");
 
                 Array imagesData = rs.getArray("images");
                 if (imagesData != null) {
@@ -166,7 +170,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     private void displayImageList() {
         imagePanel.removeAll();
         for (ImageIcon image : images) {
-            Image scaled = image.getImage().getScaledInstance((int)Math.round(image.getIconWidth()*(1.5)),(int)Math.round(image.getIconHeight()*(1.5)),0);
+            Image scaled = image.getImage().getScaledInstance((int) Math.round(image.getIconWidth() * (1.5)), (int) Math.round(image.getIconHeight() * (1.5)), 0);
             JLabel scaledImageLabel = new JLabel(new ImageIcon(scaled));
             imagePanel.add(scaledImageLabel);
             imagePanel.add(Box.createRigidArea(new Dimension(10, 10))); // Adds spacing between images
@@ -176,10 +180,22 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     }
 
     private void sendRequest() {
-        JOptionPane.showMessageDialog(this, "Request sent!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        DB_Functions db = new DB_Functions();
+        String query = String.format("Insert into requests (sender_id,recipient_id,request_type,status,request_message) values(%d,%d,'accommodation_inquiry','pending','');", userID, recipientId);
+        try (Connection conn = db.connect_to_db(); Statement st = conn.createStatement()) {
+            st.executeUpdate(query);
+            JOptionPane.showMessageDialog(this, "Request sent!", "Info", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+
     }
 
     public static void main(String[] args) {
-        new AccommodationDetailsSwingGUI(2,1);
+         << << << < HEAD
+        new AccommodationDetailsSwingGUI(2, 1);
+         == == ==
+                = new AccommodationDetailsSwingGUI(1);
+         >>> >>> > a354be9fb48a2e27432b88b6dcd2106b44a6da3e
     }
 }

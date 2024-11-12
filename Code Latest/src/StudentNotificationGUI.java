@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 public class StudentNotificationGUI extends JFrame {
 
     private DB_Functions db = new DB_Functions();
-
+    int userID = getCurrentUserId();
     public StudentNotificationGUI() {
         setTitle("Notifications");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -31,7 +31,7 @@ public class StudentNotificationGUI extends JFrame {
         headerPanel.add(headerLabel);
 
         // Fetch notifications from the database for user ID 2
-        List<HashMap<String, Object>> notifications = fetchNotifications(2);
+        List<HashMap<String, Object>> notifications = fetchNotifications(userID);
 
         // If no data, show message (for debugging)
         if (notifications.isEmpty()) {
@@ -52,7 +52,8 @@ public class StudentNotificationGUI extends JFrame {
     }
 
     private int getCurrentUserId() {
-        return 2; // Current user ID is set to 2
+        int userId = 1; // Use session to get
+        return userId; // Current user ID is set to 2
     }
 
     private List<HashMap<String, Object>> fetchNotifications(int currentUserId) {
@@ -133,6 +134,8 @@ public class StudentNotificationGUI extends JFrame {
 
     private void acceptRequest(int requestId) {
         // Placeholder for accept request logic (prints a message for testing)
+
+
         JOptionPane.showMessageDialog(this, "Request with ID " + requestId + " accepted!");
     }
 
