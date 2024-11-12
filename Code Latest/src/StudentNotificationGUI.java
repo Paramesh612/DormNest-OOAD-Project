@@ -128,7 +128,6 @@ public class StudentNotificationGUI extends JFrame {
         card.add(photoLabel, BorderLayout.WEST);
         card.add(infoPanel, BorderLayout.CENTER);
         card.add(bottomPanel, BorderLayout.SOUTH);
-
         return card;
     }
 

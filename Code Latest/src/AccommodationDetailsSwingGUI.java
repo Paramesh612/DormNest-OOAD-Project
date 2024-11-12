@@ -5,6 +5,10 @@ import java.util.List;
 import javax.swing.*;
 
 public class AccommodationDetailsSwingGUI extends JFrame {
+
+    int userID;
+    int accommodationID;
+
     private JLabel titleLabel;
     private JLabel nameLabel;
     private JLabel locationLabel;
@@ -15,7 +19,11 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     private List<ImageIcon> images;
     private JPanel imagePanel;
 
-    public AccommodationDetailsSwingGUI() {
+
+    public AccommodationDetailsSwingGUI(int userID, int accommodationID) {
+        this.accommodationID=accommodationID;
+        this.userID=userID;
+
         setTitle("Accommodation Details");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -106,19 +114,19 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         add(buttonPanel, BorderLayout.PAGE_END);
 
         sendRequestButton.addActionListener(e -> sendRequest());
-        loadAccommodationDetails(12);
+        loadAccommodationDetails();
 
         setVisible(true);
     }
 
-    private void loadAccommodationDetails(int accommodationId) {
+    private void loadAccommodationDetails() {
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
             PreparedStatement stmt = conn.prepareStatement(
                     "SELECT *, "
                             + "(SELECT array_agg(image_data) FROM accommodation_images WHERE accommodation_id = accommodation.accommodation_id) AS images "
                             + "FROM accommodation WHERE accommodation_id = ?");
-            stmt.setInt(1, accommodationId);
+            stmt.setInt(1, accommodationID);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 nameLabel.setText("Name: " + rs.getString("accommodation_name"));
@@ -172,6 +180,6 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(AccommodationDetailsSwingGUI::new);
+        new AccommodationDetailsSwingGUI(2,1);
     }
 }
