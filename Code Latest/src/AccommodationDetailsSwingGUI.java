@@ -192,10 +192,6 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-         << << << < HEAD
         new AccommodationDetailsSwingGUI(2, 1);
-         == == ==
-                = new AccommodationDetailsSwingGUI(1);
-         >>> >>> > a354be9fb48a2e27432b88b6dcd2106b44a6da3e
     }
 }
