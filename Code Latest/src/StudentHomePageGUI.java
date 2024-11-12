@@ -160,7 +160,6 @@ public class StudentHomePageGUI extends JFrame {
         detailsButton.addActionListener(e -> {
             // Pass the accommodation ID and user ID to the next screen
             new AccommodationDetailsSwingGUI(2, accoID);
-            dispose(); // Close current window
         });
         buttonPanel.add(detailsButton);
 
