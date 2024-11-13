@@ -108,13 +108,18 @@ public class StudentNotificationGUI extends JFrame {
         JLabel emailLabel = new JLabel("Email: " + notification.get("email"));
         JLabel budgetLabel = new JLabel("Max Budget: $" + notification.get("max_budget_for_roommate"));
 
+
+
         infoPanel.add(nameLabel);
         infoPanel.add(phoneLabel);
         infoPanel.add(emailLabel);
         infoPanel.add(budgetLabel);
 
         // Display profile photo (No photo or placeholder text)
-        JLabel photoLabel = new JLabel("No photo", SwingConstants.CENTER);
+//        byte[] pic = (byte[]) notification.get("photo"); //new byte[]();
+        ImageIcon unscaled = new ImageIcon((byte[]) notification.get("photo"));
+        Image scaled = unscaled.getImage().getScaledInstance(100,140,0);
+        JLabel photoLabel = new JLabel( new ImageIcon(scaled) );
         photoLabel.setPreferredSize(new Dimension(100, 100));
         photoLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 

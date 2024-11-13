@@ -21,7 +21,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     private List<ImageIcon> images;
     private JPanel imagePanel;
 
-    public AccommodationDetailsSwingGUI(int userID, int accommodationID) {
+    public AccommodationDetailsSwingGUI(int userID, int accommodationID , boolean displaySendReqButton) {
         this.accommodationID = accommodationID;
         this.userID = userID;
 
@@ -108,7 +108,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         JButton sendRequestButton = new JButton("Send Request");
         sendRequestButton.setPreferredSize(new Dimension(150, 50));
         sendRequestButton.setFont(new Font("Arial", Font.BOLD, 16));
-        buttonPanel.add(sendRequestButton);
+        if(displaySendReqButton) buttonPanel.add(sendRequestButton);
 
         add(titleLabel, BorderLayout.NORTH);
         add(centerPanel, BorderLayout.CENTER);
@@ -192,6 +192,6 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        new AccommodationDetailsSwingGUI(2, 1);
+        new AccommodationDetailsSwingGUI(2, 1 , true);
     }
 }

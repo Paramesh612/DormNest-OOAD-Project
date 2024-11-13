@@ -6,22 +6,27 @@ import java.sql.*;
 
 public class StudentHomePageGUI extends JFrame {
 
+    int userID;
     private JPanel contentPanel;
     private JComboBox<String> rentFilter;
     private JTextField locationField;
 
     public StudentHomePageGUI( int userID ) {
+
+        this.userID = userID;
+
         setTitle("Student Home Page");
         setSize(800, 600); // Full page size
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // Main Header Panel
         JPanel mainHeaderPanel = new JPanel(new BorderLayout());
         mainHeaderPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         // Student Notification Heading
-        JLabel notificationHeading = new JLabel("Student Notification", SwingConstants.CENTER);
+        JLabel notificationHeading = new JLabel("Student Home Page", SwingConstants.CENTER);
         notificationHeading.setFont(new Font("Arial", Font.BOLD, 16));
         mainHeaderPanel.add(notificationHeading, BorderLayout.NORTH);
 
@@ -31,7 +36,6 @@ public class StudentHomePageGUI extends JFrame {
         mainHeaderPanel.add(notificationButton, BorderLayout.WEST);
         notificationButton.addActionListener(e -> {
             StudentNotificationGUI sn = new StudentNotificationGUI();
-            dispose();
         });
 
         // Search and Filter Panel
@@ -72,8 +76,7 @@ public class StudentHomePageGUI extends JFrame {
 
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
-            String query = "SELECT * " +
-                    "FROM accommodation WHERE user_id = ?";
+            String query = "SELECT * FROM accommodation WHERE 1=1";
 
             if (location != null && !location.isEmpty()) {
                 query += " AND accommodation_address ILIKE ?";
@@ -94,10 +97,10 @@ public class StudentHomePageGUI extends JFrame {
             }
 
             PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setInt(1, 2); // Assuming current user ID is 2
+            int paramIndex = 1;
 
             if (location != null && !location.isEmpty()) {
-                stmt.setString(2, "%" + location + "%");
+                stmt.setString(paramIndex++, "%" + location + "%");
             }
 
             ResultSet rs = stmt.executeQuery();
@@ -106,21 +109,45 @@ public class StudentHomePageGUI extends JFrame {
                 String price = "$" + rs.getDouble("rent");
                 int roommateCount = rs.getInt("numRooms");
                 int accId = rs.getInt("accommodation_id");
-                JPanel accommodationCard = createAccommodationCard(accId, address, price, roommateCount);
+
+                // Query for the image associated with the accommodation
+                String query2 = "SELECT image_data FROM accommodation_images WHERE accommodation_id = ?";
+                PreparedStatement stmt2 = conn.prepareStatement(query2);
+                stmt2.setInt(1, accId);
+                ResultSet forImage = stmt2.executeQuery();
+
+                ImageIcon accImage = null;
+                ImageIcon scaledAccImage = null;
+                if (forImage.next()) {
+                    // Retrieve the image as a byte array from the database
+                    byte[] imageBytes = forImage.getBytes("image_data");
+                    if (imageBytes != null) {
+                        accImage = new ImageIcon(imageBytes);
+
+                        // Scale the image
+                        Image scaledImage = accImage.getImage().getScaledInstance(150, 100, Image.SCALE_SMOOTH);
+                        scaledAccImage = new ImageIcon(scaledImage);
+                    }
+                }
+                forImage.close();
+                stmt2.close();
+
+                JPanel accommodationCard = createAccommodationCard(accId, scaledAccImage, address, price, roommateCount);
                 contentPanel.add(accommodationCard);
                 contentPanel.add(Box.createVerticalStrut(10)); // Spacing between cards
             }
             rs.close();
             stmt.close();
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null,e.getMessage());
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }
 
         contentPanel.revalidate();
         contentPanel.repaint();
     }
 
-    private JPanel createAccommodationCard(int accoID, String address, String price, int roommateCount) {
+
+    private JPanel createAccommodationCard(int accoID,ImageIcon accImage ,String address, String price, int roommateCount) {
         JPanel card = new JPanel(new BorderLayout());
         card.setPreferredSize(new Dimension(700, 150)); // Constant card size
         card.setMaximumSize(new Dimension(700, 150)); // Enforce consistent size
@@ -128,7 +155,7 @@ public class StudentHomePageGUI extends JFrame {
         card.setBackground(Color.WHITE);
 
         // Landscape photo placeholder
-        JLabel photoLabel = new JLabel("Photo", SwingConstants.CENTER);
+        JLabel photoLabel = new JLabel(accImage); //"Photo", SwingConstants.CENTER
         photoLabel.setPreferredSize(new Dimension(150, 100)); // Wider and shorter for landscape orientation
         photoLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         card.add(photoLabel, BorderLayout.WEST);
@@ -159,7 +186,11 @@ public class StudentHomePageGUI extends JFrame {
         JButton detailsButton = new JButton("More details...");
         detailsButton.addActionListener(e -> {
             // Pass the accommodation ID and user ID to the next screen
-            new AccommodationDetailsSwingGUI(2, accoID);
+
+//            JDialog notificationPage = new JDialog(this, "Notifications",true);
+//            notificationPage.add(new AccommodationDetailsSwingGUI(userID,accoID));
+
+            AccommodationDetailsSwingGUI accDetailedPage  = new AccommodationDetailsSwingGUI(2, accoID , true);
         });
         buttonPanel.add(detailsButton);
 
