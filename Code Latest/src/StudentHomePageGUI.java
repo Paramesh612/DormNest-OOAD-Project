@@ -38,6 +38,7 @@ public class StudentHomePageGUI extends JFrame {
             StudentNotificationGUI sn = new StudentNotificationGUI(userID);
         });
 
+
         // Search and Filter Panel
         JPanel searchPanel = new JPanel(new GridLayout(1, 3, 10, 10));
         locationField = new JTextField("Search By Location");
@@ -47,9 +48,20 @@ public class StudentHomePageGUI extends JFrame {
         JButton filterButton = new JButton("Filter");
         filterButton.addActionListener(new FilterAction());
 
+        JButton roommateMatchingButton = new JButton("Roommate Matching");
+        roommateMatchingButton.addActionListener(e -> {
+
+            new RoommateMatchingApp(userID);
+            // Implement the action when the "Roommate Matching" button is clicked
+//            JOptionPane.showMessageDialog(this, "Roommate Matching feature under development!");
+            // You could replace the above line with your desired functionality,
+            // such as opening a new window or performing an action for roommate matching.
+        });
+
         searchPanel.add(locationField);
         searchPanel.add(rentFilter);
         searchPanel.add(filterButton);
+        searchPanel.add(roommateMatchingButton);
 
         mainHeaderPanel.add(searchPanel, BorderLayout.CENTER);
 

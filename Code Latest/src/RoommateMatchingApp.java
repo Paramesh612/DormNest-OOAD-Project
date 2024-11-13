@@ -11,8 +11,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class RoommateMatchingApp extends JFrame {
+    int userID;
 
-    public RoommateMatchingApp() {
+    public RoommateMatchingApp(int userID) {
+
+        this.userID = userID;
+
         setTitle("Roommate Matching");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -22,7 +26,7 @@ public class RoommateMatchingApp extends JFrame {
         JScrollPane scrollPane = new JScrollPane(mainPanel);
 
         // Fetch matched students based on the current user's preferences
-        List<HashMap<String, Object>> matchedStudents = fetchMatchedStudents(getCurrentUserId());
+        List<HashMap<String, Object>> matchedStudents = fetchMatchedStudents(userID);
 
         for (HashMap<String, Object> student : matchedStudents) {
             JPanel studentCard = createStudentCard(student);
@@ -33,16 +37,16 @@ public class RoommateMatchingApp extends JFrame {
         setVisible(true);
     }
 
-    private int getCurrentUserId() {
-        return 1; // Using user ID 1 as a sample ID
-    }
+    // private int userID {
+    // return 1; // Using user ID 1 as a sample ID
+    // }
 
     private List<HashMap<String, Object>> fetchMatchedStudents(int currentUserId) {
         List<HashMap<String, Object>> matchedStudents = new ArrayList<>();
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
             // Fetch current user details
-            String currentUserQuery =  """
+            String currentUserQuery = """
                     SELECT u.user_id AS user_id, u.firstname AS firstname, u.lastname AS lastname,
                            u.phone_number AS phone_number, u.email AS email, u.photo AS photo,
                            s.*
@@ -168,8 +172,7 @@ public class RoommateMatchingApp extends JFrame {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        }
-        else
+        } else
             photoLabel.setText("No photo");
 
         // Display accommodation images (optional)
@@ -177,23 +180,23 @@ public class RoommateMatchingApp extends JFrame {
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
             String accommodationImagesQuery = """
-            SELECT image_data
-            FROM accommodation_images ai
-            JOIN accommodation a ON ai.accommodation_id = a.accommodation_id
-            WHERE a.user_id = ?
-            """;
+                    SELECT image_data
+                    FROM accommodation_images ai
+                    JOIN accommodation a ON ai.accommodation_id = a.accommodation_id
+                    WHERE a.user_id = ?
+                    """;
             PreparedStatement ps = conn.prepareStatement(accommodationImagesQuery);
             ps.setInt(1, (int) student.get("user_id"));
             ResultSet rs = ps.executeQuery();
 
             int imageCount = 0;
-            while (rs.next() && imageCount < 3) {  // Display up to 3 images (you can adjust this limit)
+            while (rs.next() && imageCount < 3) { // Display up to 3 images (you can adjust this limit)
                 byte[] imageData = rs.getBytes("image_data");
                 if (imageData != null) {
                     try {
                         BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageData));
                         Image scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
-                        imagePanel.add(new JLabel(new ImageIcon(scaledImg)),BorderLayout.EAST);
+                        imagePanel.add(new JLabel(new ImageIcon(scaledImg)), BorderLayout.EAST);
                         imageCount++;
                     } catch (Exception ex) {
                         ex.printStackTrace();
@@ -216,12 +219,11 @@ public class RoommateMatchingApp extends JFrame {
 
         card.add(photoLabel, BorderLayout.WEST);
         card.add(infoPanel, BorderLayout.CENTER);
-        card.add(imagePanel, BorderLayout.EAST);  // Add the image gallery to the right side
+        card.add(imagePanel, BorderLayout.EAST); // Add the image gallery to the right side
         card.add(bottomPanel, BorderLayout.SOUTH);
 
         return card;
     }
-
 
     private void sendRequest(int recipientId) {
         DB_Functions db = new DB_Functions();
@@ -231,7 +233,7 @@ public class RoommateMatchingApp extends JFrame {
                         VALUES (?, ?, 'roommate_request', 'pending')
                     """;
             PreparedStatement ps = conn.prepareStatement(insertRequest);
-            ps.setInt(1, getCurrentUserId()); // Sender's user ID
+            ps.setInt(1, userID); // Sender's user ID
             ps.setInt(2, recipientId);
             ps.executeUpdate();
 
@@ -243,6 +245,6 @@ public class RoommateMatchingApp extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(RoommateMatchingApp::new);
+        new RoommateMatchingApp(1);
     }
 }
