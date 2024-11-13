@@ -9,13 +9,17 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class AddPropertyGUI extends JFrame {
+    int userID;
     private JTextField nameField, priceField, numPeopleField;
     private JTextArea ownerNoteArea, addressField;
     private JButton imageButton, submitButton;
     private JPanel imageDisplayPanel;
     private ArrayList<File> selectedFiles = new ArrayList<>();
 
-    public AddPropertyGUI() {
+    public AddPropertyGUI(int userID) {
+
+        this.userID=userID;
+
         setTitle("Add Property");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full-screen
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -151,8 +155,8 @@ public class AddPropertyGUI extends JFrame {
                         + "VALUES (?, ?, ?, 'vacant', ?, ?, ?) RETURNING accommodation_id";
 
                 try (PreparedStatement accStmt = conn.prepareStatement(accInsertQuery)) {
-                    int userId = 1; // Replace with actual user ID
-                    accStmt.setInt(1, userId);
+//                    int userId = 1; // Replace with actual user ID
+                    accStmt.setInt(1, userID);
                     accStmt.setString(2, nameField.getText());
                     accStmt.setString(3, addressField.getText());
                     accStmt.setInt(4, Integer.parseInt(numPeopleField.getText()));
@@ -180,6 +184,7 @@ public class AddPropertyGUI extends JFrame {
                     }
 
                     JOptionPane.showMessageDialog(null, "Successfully Registered");
+                    dispose();
 
                 } catch (Exception error) {
                     JOptionPane.showMessageDialog(null, error.getMessage());
@@ -191,6 +196,6 @@ public class AddPropertyGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(AddPropertyGUI::new);
+        new AddPropertyGUI(1);
     }
 }

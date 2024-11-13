@@ -49,8 +49,11 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         availabilityLabel = new JLabel("Availability: ");
         availabilityLabel.setFont(labelFont);
         ownerNoteTextArea = new JTextArea(5, 30);
-        ownerNoteTextArea.setFont(textAreaFont);
+        ownerNoteTextArea.setFont(new Font("Arial",Font.PLAIN,19));
         ownerNoteTextArea.setEditable(false);
+        ownerNoteTextArea.setLineWrap(true);  // Enable line wrapping
+        ownerNoteTextArea.setWrapStyleWord(true);  // Wrap by word rather than character
+
 
         JPanel centerPanel = new JPanel(new BorderLayout());
 
@@ -65,6 +68,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         // Use GridBagLayout for the details panel
         JPanel detailsPanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
+
         gbc.insets = new Insets(5, 0, 5, 0); // Add vertical space between components
         gbc.anchor = GridBagConstraints.WEST;
         gbc.gridx = 0; // Start with the first column
@@ -101,7 +105,10 @@ public class AccommodationDetailsSwingGUI extends JFrame {
 
         JPanel ownerNotePanel = new JPanel();
         ownerNotePanel.setLayout(new BorderLayout());
-        ownerNotePanel.add(new JLabel("Owner's Note:"), BorderLayout.NORTH);
+
+        JLabel owner_name_notifier = new JLabel("Owner's Note:");
+        owner_name_notifier.setFont(new Font("Times New Roman",Font.BOLD,25));
+        ownerNotePanel.add( owner_name_notifier, BorderLayout.NORTH);
         ownerNotePanel.add(new JScrollPane(ownerNoteTextArea), BorderLayout.CENTER);
 
         JPanel buttonPanel = new JPanel(new FlowLayout());
@@ -192,6 +199,6 @@ public class AccommodationDetailsSwingGUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        new AccommodationDetailsSwingGUI(2, 1 , true);
+        new AccommodationDetailsSwingGUI(2, 14 , true);
     }
 }

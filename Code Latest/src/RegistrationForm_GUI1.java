@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Base64;
 
@@ -206,8 +207,8 @@ public class RegistrationForm_GUI1 extends JFrame {
             String hashedPassword, String userType, byte[] photo) {
         DB_Functions db = new DB_Functions();
         Connection conn = db.connect_to_db();
-
-        String sql = "INSERT INTO users (firstname, lastname, username, email, phone_number, password, user_type, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        int userID = 0;
+        String sql = "INSERT INTO users (firstname, lastname, username, email, phone_number, password, user_type, photo) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING user_id";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, firstName);
@@ -218,10 +219,15 @@ public class RegistrationForm_GUI1 extends JFrame {
             pstmt.setString(6, hashedPassword);
             pstmt.setString(7, userType);
             pstmt.setBytes(8, photo); // Set photo bytes
-            pstmt.executeUpdate();
+            ResultSet userIDSet = pstmt.executeQuery();
+            if(userIDSet.next()) userID = userIDSet.getInt("user_id");
 
             JOptionPane.showMessageDialog(null, "Registration successful!");
-            Login_GUI log = new Login_GUI();
+            if(userType.equals("student"))
+                new StudentPreferencesForm_GUI(userID);
+            else
+                new Login_GUI();
+
             dispose();
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, "Registration failed: " + ex.getMessage());

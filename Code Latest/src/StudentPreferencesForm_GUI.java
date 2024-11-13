@@ -5,13 +5,15 @@ import javax.swing.*;
 import java.sql.*;
 
 public class StudentPreferencesForm_GUI extends JFrame {
+    int userID;
     private JTextField studentIdField, preferredRentField, preferredLocationField, maxDistanceField, maxBudgetField;
     private JRadioButton hasPetsYes, hasPetsNo, worksAtNightYes, worksAtNightNo;
     private JComboBox<String> cleanlinessPrefCombo, socialLifestyleCombo, mealPreferenceCombo,
             transportationMethodCombo;
     private JTextArea allergyInformationArea;
 
-    public StudentPreferencesForm_GUI() {
+    public StudentPreferencesForm_GUI(int userID) {
+        this.userID=userID;
         setTitle("Student Preferences Form");
         setSize(500, 650);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -24,10 +26,11 @@ public class StudentPreferencesForm_GUI extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         // Student ID
-        panel.add(new JLabel("Student ID:"), gbc);
-        studentIdField = new JTextField(10);
-        studentIdField.setText("Get from session");
-        panel.add(studentIdField, gbc);
+//        panel.add(new JLabel("Student ID:"), gbc);
+//        studentIdField = new JTextField(10);
+//        studentIdField.setText("Get from session");
+//        panel.add(studentIdField, gbc);
+        
 
         // Preferred Rent
         gbc.gridy = 1;
@@ -125,7 +128,9 @@ public class StudentPreferencesForm_GUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             // Retrieving values from form fields
-            String studentId = studentIdField.getText().trim();
+//            String studentId = studentIdField.getText().trim();
+            
+            
             String preferredRent = preferredRentField.getText().trim();
             String preferredLocation = preferredLocationField.getText().trim();
             boolean hasPets = hasPetsYes.isSelected();
@@ -157,13 +162,13 @@ public class StudentPreferencesForm_GUI extends JFrame {
              */
 
             // Insert into database
-            insertStudentPreferences(studentId, preferredRent, preferredLocation, hasPets, worksAtNight, maxDistance,
+            insertStudentPreferences(userID, preferredRent, preferredLocation, hasPets, worksAtNight, maxDistance,
                     cleanlinessPreference, socialLifestyle, allergyInformation, mealPreference, transportationMethod,
                     maxBudget);
         }
     }
 
-    private void insertStudentPreferences(String studentId, String preferredRent, String preferredLocation,
+    private void insertStudentPreferences(int userID, String preferredRent, String preferredLocation,
             boolean hasPets, boolean worksAtNight, String maxDistance,
             String cleanlinessPreference, String socialLifestyle, String allergyInformation,
             String mealPreference, String transportationMethod, String maxBudget) {
@@ -181,7 +186,7 @@ public class StudentPreferencesForm_GUI extends JFrame {
                 PreparedStatement stmt = conn.prepareStatement(insertQuery)) {
 
             // Set the parameters for the SQL query
-            stmt.setInt(1, Integer.parseInt(studentId));
+            stmt.setInt(1, userID);
             stmt.setInt(2, Integer.parseInt(preferredRent));
             stmt.setString(3, preferredLocation);
             stmt.setBoolean(4, hasPets);
@@ -197,6 +202,7 @@ public class StudentPreferencesForm_GUI extends JFrame {
             // Execute the update
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null, "Preferences saved to database successfully!");
+            Login_GUI log = new Login_GUI();
 
         } catch (SQLException ex) {
             ex.printStackTrace();
@@ -205,6 +211,6 @@ public class StudentPreferencesForm_GUI extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(StudentPreferencesForm_GUI::new);
+        StudentPreferencesForm_GUI stDetails = new StudentPreferencesForm_GUI(1);
     }
 }

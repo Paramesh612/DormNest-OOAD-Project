@@ -13,6 +13,16 @@ public class OwnerDashboard extends JFrame {
 
         this.userID=userID;
 
+        JPanel buttonPanel = new JPanel(new FlowLayout());
+        JButton sendRequestButton = new JButton("Add Property");
+        sendRequestButton.setPreferredSize(new Dimension(150, 50));
+        sendRequestButton.setFont(new Font("Arial", Font.BOLD, 16));
+        buttonPanel.add(sendRequestButton);
+        sendRequestButton.addActionListener(e->{
+            new AddPropertyGUI(userID);
+        });
+
+
         setTitle("Owner Dashboard");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Set the frame to full screen
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -77,6 +87,7 @@ public class OwnerDashboard extends JFrame {
         loadAccommodations("",null);
 
         getOwnerDetails();
+        add(buttonPanel, BorderLayout.PAGE_END);
         // Ensure frame is visible
         setVisible(true);
     }
@@ -144,6 +155,7 @@ public class OwnerDashboard extends JFrame {
 
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
+                String accName = rs.getString("accommodation_name");
                 String address = rs.getString("accommodation_address");
                 String price = "$" + rs.getDouble("rent");
                 int roommateCount = rs.getInt("numRooms");
@@ -171,7 +183,7 @@ public class OwnerDashboard extends JFrame {
                 forImage.close();
                 stmt2.close();
 
-                JPanel accommodationCard = createAccommodationCard(accId, scaledAccImage, address, price, roommateCount);
+                JPanel accommodationCard = createAccommodationCard(accId, accName, scaledAccImage, address, price, roommateCount);
                 propertyPanel.add(accommodationCard);
                 propertyPanel.add(Box.createVerticalStrut(10)); // Spacing between cards
             }
@@ -186,7 +198,7 @@ public class OwnerDashboard extends JFrame {
     }
 
 
-    private JPanel createAccommodationCard(int accoID,ImageIcon accImage ,String address, String price, int roommateCount) {
+    private JPanel createAccommodationCard(int accoID,String accName,ImageIcon accImage ,String address, String price, int roommateCount) {
         JPanel card = new JPanel(new BorderLayout());
         card.setPreferredSize(new Dimension(700, 150)); // Constant card size
         card.setMaximumSize(new Dimension(700, 150)); // Enforce consistent size
@@ -200,23 +212,28 @@ public class OwnerDashboard extends JFrame {
         card.add(photoLabel, BorderLayout.WEST);
 
         // Info Panel
-        JPanel infoPanel = new JPanel(new GridLayout(2, 1));
+        JPanel infoPanel = new JPanel(new GridLayout(4, 1));
         infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        //Name
+        JLabel accNameLabel = new JLabel("Name: "+ accName);
+        accNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        infoPanel.add(accNameLabel);
 
         // Address
         JLabel addressLabel = new JLabel("Address: " + address);
-        addressLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        addressLabel.setFont(new Font("Arial", Font.BOLD, 18));
         infoPanel.add(addressLabel);
 
         // Price and Roommate count panel
         JPanel detailsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         JLabel priceLabel = new JLabel("Price: " + price);
-        priceLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        priceLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         JLabel roommateCountLabel = new JLabel("Roommate count: " + roommateCount);
-        roommateCountLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+        roommateCountLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         detailsPanel.add(priceLabel);
-        detailsPanel.add(roommateCountLabel);
         infoPanel.add(detailsPanel);
+        infoPanel.add(roommateCountLabel);
 
         card.add(infoPanel, BorderLayout.CENTER);
 

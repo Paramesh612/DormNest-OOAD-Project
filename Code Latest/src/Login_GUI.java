@@ -82,17 +82,20 @@ public class Login_GUI {
             DB_Functions dbfunc = new DB_Functions();
             try (Connection conn = dbfunc.connect_to_db()) {
                 // Prepare the query to prevent SQL injection
-                String query = "SELECT password FROM users WHERE username = ?";
+                String query = "SELECT user_id,password,user_type FROM users WHERE username = ?";
                 try (PreparedStatement stmt = conn.prepareStatement(query)) {
                     stmt.setString(1, unameString);
                     ResultSet rs = stmt.executeQuery();
-
                     if (rs.next()) {
                         String storedHash = rs.getString("password");
-
+                        String userType= rs.getString("user_type");
+                        int userID = rs.getInt("user_id");
                         // Check if the password matches the stored hash
                         if (verifyPassword(passString, storedHash)) {
                             JOptionPane.showMessageDialog(frame, "Login Successful!");
+                            if(userType.equals("owner")) new OwnerDashboard(userID);
+                            else new StudentHomePageGUI(userID);
+
                             frame.dispose();
                             // Proceed to Student Dashboard
                         } else {
