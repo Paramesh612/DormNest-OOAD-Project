@@ -240,6 +240,7 @@ public class StudentPreferencesForm_GUI extends JFrame {
             stmt.executeUpdate();
             JOptionPane.showMessageDialog(null,"Registration Completed\nPlease Login :)");
             new Login_GUI();
+            dispose();
 
         } catch (SQLException ex) {
             ex.printStackTrace();
