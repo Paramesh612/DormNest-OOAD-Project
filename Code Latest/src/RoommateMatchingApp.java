@@ -6,8 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 
 public class RoommateMatchingApp extends JFrame {
-
+    int userID;
     public RoommateMatchingApp(int userID) {
+
+        this.userID=userID;
+
         setTitle("Roommate Matching");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -35,7 +38,7 @@ public class RoommateMatchingApp extends JFrame {
         try (Connection conn = db.connect_to_db();
              PreparedStatement ps = conn.prepareStatement(query)) {
 
-            ps.setInt(1, getCurrentUserId());  // Retrieve current user’s ID
+            ps.setInt(1, userID);  // Retrieve current user’s ID
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -99,7 +102,7 @@ public class RoommateMatchingApp extends JFrame {
         try (Connection conn = db.connect_to_db();
              PreparedStatement ps = conn.prepareStatement(query)) {
 
-            ps.setInt(1, getCurrentUserId());  // Retrieve current user’s ID
+            ps.setInt(1, userID);  // Retrieve current user’s ID
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -133,24 +136,29 @@ public class RoommateMatchingApp extends JFrame {
         JLabel emailLabel = new JLabel("Email: " + studentDetails.get("email"));
         JLabel budgetLabel = new JLabel("Max Budget: $" + studentDetails.get("max_budget_for_roommate"));
 
-
-
         infoPanel.add(nameLabel);
         infoPanel.add(phoneLabel);
         infoPanel.add(emailLabel);
         infoPanel.add(budgetLabel);
 
         // Display profile photo (No photo or placeholder text)
-//        byte[] pic = (byte[]) studentDetails.get("photo"); //new byte[]();
-        ImageIcon unscaled = new ImageIcon((byte[]) studentDetails.get("photo"));
-        Image scaled = unscaled.getImage().getScaledInstance(100,140,0);
-        JLabel photoLabel = new JLabel( new ImageIcon(scaled) );
-        photoLabel.setPreferredSize(new Dimension(100, 100));
+        byte[] photoBytes = (byte[]) studentDetails.get("photo"); // Get photo bytes
+        JLabel photoLabel;
+        if (photoBytes != null) {
+            ImageIcon unscaled = new ImageIcon(photoBytes);
+            Image scaled = unscaled.getImage().getScaledInstance(100, 140, 0);
+            photoLabel = new JLabel(new ImageIcon(scaled));
+        } else {
+            // Provide a default image or text if no photo exists
+            photoLabel = new JLabel("No photo available");
+            photoLabel.setPreferredSize(new Dimension(100, 100));
+            photoLabel.setHorizontalAlignment(JLabel.CENTER);
+        }
         photoLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
         // Accept Request button
-        JButton acceptButton = new JButton("Send Request");
-        acceptButton.addActionListener(e -> sendRequest((int) studentDetails.get("request_id")));
+        JButton acceptButton = new JButton("Send roommate request");
+        acceptButton.addActionListener(e -> sendRequest((int) studentDetails.get("id")));
 
         // Arrange components in card
         JPanel bottomPanel = new JPanel(new FlowLayout());
@@ -162,13 +170,14 @@ public class RoommateMatchingApp extends JFrame {
         return card;
     }
 
+
     private void sendRequest(int recipientId) {
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
             String insertRequest = "INSERT INTO requests (sender_id, recipient_id, request_type, status) " +
                     "VALUES (?, ?, 'roommate_request', 'pending')";
             PreparedStatement ps = conn.prepareStatement(insertRequest);
-            ps.setInt(1, getCurrentUserId());
+            ps.setInt(1, userID);
             ps.setInt(2, recipientId);
             ps.executeUpdate();
 
@@ -179,11 +188,8 @@ public class RoommateMatchingApp extends JFrame {
         }
     }
 
-    private int getCurrentUserId() {
-        return 1; // Placeholder: replace with actual session or user ID retrieval logic.
-    }
 
     public static void main(String[] args) {
-        new RoommateMatchingApp(3);
+        new RoommateMatchingApp(6);
     }
 }
