@@ -17,7 +17,7 @@ public class StudentHomePageGUI extends JFrame {
 
         setTitle("Student Home Page");
         setSize(800, 600); // Full page size
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
@@ -35,7 +35,7 @@ public class StudentHomePageGUI extends JFrame {
         notificationButton.setPreferredSize(new Dimension(50, 50));
         mainHeaderPanel.add(notificationButton, BorderLayout.WEST);
         notificationButton.addActionListener(e -> {
-            StudentNotificationGUI sn = new StudentNotificationGUI();
+            StudentNotificationGUI sn = new StudentNotificationGUI(userID);
         });
 
         // Search and Filter Panel

@@ -26,7 +26,7 @@ public class AccommodationDetailsSwingGUI extends JFrame {
         this.userID = userID;
 
         setTitle("Accommodation Details");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());
 

@@ -63,7 +63,7 @@ public class Student {
 
         JFrame getStudentDetailsFrame = new JFrame();
         getStudentDetailsFrame.setSize(1000, 1000);
-        getStudentDetailsFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getStudentDetailsFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
         JLabel labelName = new JLabel("Name ");
         JLabel labelEmail = new JLabel("Email ");
