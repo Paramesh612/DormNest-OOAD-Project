@@ -17,6 +17,12 @@ public class OwnerDashboard extends JFrame {
         JButton sendRequestButton = new JButton("Add Property");
         sendRequestButton.setPreferredSize(new Dimension(150, 50));
         sendRequestButton.setFont(new Font("Arial", Font.BOLD, 16));
+        sendRequestButton.setBackground(new Color(52, 14, 15)); // Blue background
+        sendRequestButton.setForeground(Color.WHITE); // White text
+        sendRequestButton.setFocusPainted(false); // Remove focus outline
+        sendRequestButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Add padding
+        sendRequestButton.setBorderPainted(false); // Remove border outline
+        sendRequestButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Hand cursor
         buttonPanel.add(sendRequestButton);
         sendRequestButton.addActionListener(e -> {
             new AddPropertyGUI(userID);
@@ -34,29 +40,30 @@ public class OwnerDashboard extends JFrame {
 
         // Title Panel
         JPanel titlePanel = new JPanel();
-        titlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        titlePanel.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 3)); // Blue border
         JLabel titleLabel = new JLabel("Owner Dashboard");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        titleLabel.setForeground(new Color(52, 14, 15)); // Blue color
         titlePanel.add(titleLabel);
 
         // Owner Info Panel
         JPanel ownerInfoPanel = new JPanel(new BorderLayout(10, 10));
-        ownerInfoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        ownerInfoPanel.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2)); // Blue border
 
         // Owner image
         ImageIcon ownerImage;
         ownerImageLabel = new JLabel(""); // Placeholder text
         ownerImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         ownerImageLabel.setPreferredSize(new Dimension(150, 150));
-        ownerImageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        ownerImageLabel.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2));
 
         // Owner details
         ownerDetailsArea = new JTextArea();
         ownerDetailsArea.setEditable(false);
         ownerDetailsArea.setLineWrap(true);
         ownerDetailsArea.setWrapStyleWord(true);
-        ownerDetailsArea.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        ownerDetailsArea.setFont(new Font("Times New Roman", Font.BOLD, 20));
+        ownerDetailsArea.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2)); // Blue border
+        ownerDetailsArea.setFont(new Font("Arial", Font.BOLD, 20));
         ownerDetailsArea.setBackground(new Color(242, 241, 237));
 
         ownerInfoPanel.add(ownerImageLabel, BorderLayout.WEST);
@@ -82,29 +89,18 @@ public class OwnerDashboard extends JFrame {
         // Create Notification Button Panel
         JPanel notificationPanel = new JPanel(new BorderLayout());
 
-        JButton notificationButton = new JButton("🔔"+"  Check for Notifications");
+        JButton notificationButton = new JButton("🔔" + " Check for Notifications");
         notificationButton.setPreferredSize(new Dimension(50, 50));
+        notificationButton.setBackground(new Color(52, 14, 15)); // Blue background
+        notificationButton.setForeground(Color.WHITE); // White text
+        notificationButton.setFont(new Font("Arial", Font.BOLD, 14)); // Adjust font size
         notificationPanel.add(notificationButton, BorderLayout.CENTER);
         notificationButton.addActionListener(e -> {
             StudentNotificationGUI sn = new StudentNotificationGUI(userID);
-//            dispose();
+            // dispose();
         });
+
         add(notificationPanel, BorderLayout.NORTH);
-
-//        JButton notificationButton = new JButton("🔔"); // Using bell emoji as the notification icon
-//        notificationButton.setFont(new Font("Arial", Font.PLAIN, 28)); // Adjust size
-//        notificationButton.setPreferredSize(new Dimension(40, 40));
-//        notificationButton.setBorder(BorderFactory.createEmptyBorder());
-//        notificationButton.setBackground(new Color(255, 255, 255, 0)); // Transparent background
-
-        // Action listener for notification button
-//        notificationButton.addActionListener(e -> {
-//            // Placeholder: Show a message or any other functionality for notifications
-//            JOptionPane.showMessageDialog(this, "You have new notifications!");
-//        });
-
-        // Add the notification button to the top right corner
-//        notificationPanel.add(notificationButton, BorderLayout.EAST);
 
         // Add the rest of the components
         add(containerPanel, BorderLayout.CENTER);
@@ -208,7 +204,8 @@ public class OwnerDashboard extends JFrame {
                 forImage.close();
                 stmt2.close();
 
-                JPanel accommodationCard = createAccommodationCard(accId, accName, scaledAccImage, address, price, roommateCount);
+                JPanel accommodationCard = createAccommodationCard(accId, accName, scaledAccImage, address, price,
+                        roommateCount);
                 propertyPanel.add(accommodationCard);
                 propertyPanel.add(Box.createVerticalStrut(10)); // Spacing between cards
             }
@@ -222,17 +219,18 @@ public class OwnerDashboard extends JFrame {
         propertyPanel.repaint();
     }
 
-    private JPanel createAccommodationCard(int accoID, String accName, ImageIcon accImage, String address, String price, int roommateCount) {
+    private JPanel createAccommodationCard(int accoID, String accName, ImageIcon accImage, String address, String price,
+            int roommateCount) {
         JPanel card = new JPanel(new BorderLayout());
         card.setPreferredSize(new Dimension(700, 150)); // Constant card size
         card.setMaximumSize(new Dimension(700, 150)); // Enforce consistent size
-        card.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        card.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2)); // Blue border
         card.setBackground(Color.WHITE);
 
         // Landscape photo placeholder
-        JLabel photoLabel = new JLabel(accImage); //"Photo", SwingConstants.CENTER
+        JLabel photoLabel = new JLabel(accImage); // "Photo", SwingConstants.CENTER
         photoLabel.setPreferredSize(new Dimension(280, 200)); // Wider and shorter for landscape orientation
-        photoLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        photoLabel.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2));
         card.add(photoLabel, BorderLayout.WEST);
 
         // Info Panel
@@ -242,19 +240,23 @@ public class OwnerDashboard extends JFrame {
         // Name
         JLabel accNameLabel = new JLabel("Name: " + accName);
         accNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        accNameLabel.setForeground(new Color(52, 14, 15)); // Blue color
         infoPanel.add(accNameLabel);
 
         // Address
         JLabel addressLabel = new JLabel("Address: " + address);
         addressLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        addressLabel.setForeground(new Color(52, 14, 15)); // Blue color
         infoPanel.add(addressLabel);
 
         // Price and Roommate count panel
         JPanel detailsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         JLabel priceLabel = new JLabel("Price: " + price);
         priceLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        priceLabel.setForeground(new Color(52, 14, 15)); // Blue color
         JLabel roommateCountLabel = new JLabel("Roommate count: " + roommateCount);
         roommateCountLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        roommateCountLabel.setForeground(new Color(52, 14, 15)); // Blue color
         detailsPanel.add(priceLabel);
         infoPanel.add(detailsPanel);
         infoPanel.add(roommateCountLabel);
@@ -264,6 +266,11 @@ public class OwnerDashboard extends JFrame {
         // More details button
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton detailsButton = new JButton("More details...");
+        detailsButton.setBackground(new Color(52, 14, 15)); // Blue button
+        detailsButton.setForeground(Color.WHITE); // White text
+        detailsButton.setFont(new Font("Arial", Font.BOLD, 14)); // Adjust font size
+        detailsButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
+        detailsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Hand cursor
         detailsButton.addActionListener(e -> {
             // Pass the accommodation ID and user ID to the next screen
             AccommodationDetailsSwingGUI accDetailedPage = new AccommodationDetailsSwingGUI(2, accoID, false);
