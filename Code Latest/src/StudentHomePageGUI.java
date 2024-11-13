@@ -75,7 +75,7 @@ public class StudentHomePageGUI extends JFrame {
 
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
-            String query = String.format("SELECT * FROM accommodation WHERE user_id=%d",userID);
+            String query = String.format("SELECT * FROM accommodation");
 
             if (location != null && !location.isEmpty()) {
                 query += " AND accommodation_address ILIKE ?";
@@ -195,7 +195,7 @@ public class StudentHomePageGUI extends JFrame {
 //            JDialog notificationPage = new JDialog(this, "Notifications",true);
 //            notificationPage.add(new AccommodationDetailsSwingGUI(userID,accoID));
 
-            AccommodationDetailsSwingGUI accDetailedPage  = new AccommodationDetailsSwingGUI(2, accoID , true );
+            AccommodationDetailsSwingGUI accDetailedPage  = new AccommodationDetailsSwingGUI(userID, accoID , true );
         });
         buttonPanel.add(detailsButton);
 

@@ -34,6 +34,7 @@ CREATE TABLE student_details (
     meal_preference VARCHAR(50),  -- E.g., 'vegetarian', 'non-vegetarian'
     transportation_method VARCHAR(50),  -- E.g., 'car', 'bike', 'public transport'
     max_budget_for_roommate DECIMAL(10, 2)  -- Maximum contribution towards rent
+    score INTEGER
 );
 
 CREATE TABLE contracts (
