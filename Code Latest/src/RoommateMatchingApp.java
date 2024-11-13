@@ -1,172 +1,224 @@
-import java.awt.*;
-import java.sql.*;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.math.BigDecimal;
+import java.sql.*;
+import javax.imageio.ImageIO;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
 public class RoommateMatchingApp extends JFrame {
-    int userID;
-    public RoommateMatchingApp(int userID) {
 
-        this.userID=userID;
-
+    public RoommateMatchingApp() {
         setTitle("Roommate Matching");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(mainPanel);
 
-        // Fetch data from database
-        List<HashMap<String, Object>> matchedStudents = fetchMatchedStudents();
+        // Fetch matched students based on the current user's preferences
+        List<HashMap<String, Object>> matchedStudents = fetchMatchedStudents(getCurrentUserId());
 
         for (HashMap<String, Object> student : matchedStudents) {
-            JPanel studentCard = userCard(student);
+            JPanel studentCard = createStudentCard(student);
             mainPanel.add(studentCard);
         }
 
         add(scrollPane);
         setVisible(true);
     }
-    private int getCurrentUserScore() {
-        int score = 0;
-        String query = "SELECT score FROM student_details WHERE student_id = ?";
 
+    private int getCurrentUserId() {
+        return 1; // Using user ID 1 as a sample ID
+    }
+
+    private List<HashMap<String, Object>> fetchMatchedStudents(int currentUserId) {
+        List<HashMap<String, Object>> matchedStudents = new ArrayList<>();
         DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db();
-             PreparedStatement ps = conn.prepareStatement(query)) {
+        try (Connection conn = db.connect_to_db()) {
+            // Fetch current user details
+            String currentUserQuery =  """
+                    SELECT u.user_id AS user_id, u.firstname AS firstname, u.lastname AS lastname,
+                           u.phone_number AS phone_number, u.email AS email, u.photo AS photo,
+                           s.*
+                    FROM student_details s
+                    JOIN users u ON s.student_id = u.user_id
+                    WHERE s.student_id != ?
+                    """;
+            PreparedStatement currentUserPs = conn.prepareStatement(currentUserQuery);
+            currentUserPs.setInt(1, currentUserId);
+            ResultSet currentUserRs = currentUserPs.executeQuery();
+            if (!currentUserRs.next()) {
+                return matchedStudents; // Return if current user not found
+            }
+            HashMap<String, Object> currentUser = extractStudentData(currentUserRs);
 
-            ps.setInt(1, userID);  // Retrieve current user’s ID
+            // Fetch other students' details and calculate matching scores
+            // Use aliases to avoid ambiguity
+            String allStudentsQuery = """
+                    SELECT u.user_id AS user_id, u.firstname AS firstname, u.lastname AS lastname,
+                           u.phone_number AS phone_number, u.email AS email, u.photo AS photo,
+                           s.*
+                    FROM student_details s
+                    JOIN users u ON s.student_id = u.user_id
+                    WHERE s.student_id != ?
+                    """;
+
+            PreparedStatement ps = conn.prepareStatement(allStudentsQuery);
+            ps.setInt(1, currentUserId);
             ResultSet rs = ps.executeQuery();
 
-            if (rs.next()) {
-                score = rs.getInt("score");
+            while (rs.next()) {
+                HashMap<String, Object> student = extractStudentData(rs);
+                int score = calculateMatchingScore(currentUser, student);
+                if (score >= 80) { // Only add students with score >= 80
+                    student.put("score", score);
+                    matchedStudents.add(student);
+                }
             }
 
+            // Sort students by score in descending order
+            matchedStudents.sort(Comparator.comparingInt(s -> -(int) s.get("score")));
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed to fetch user score: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage());
+        }
+        return matchedStudents;
+    }
+
+    private HashMap<String, Object> extractStudentData(ResultSet rs) throws SQLException {
+        HashMap<String, Object> studentData = new HashMap<>();
+        studentData.put("user_id", rs.getInt("user_id"));
+        studentData.put("firstname", rs.getString("firstname"));
+        studentData.put("lastname", rs.getString("lastname"));
+        studentData.put("phone_number", rs.getString("phone_number"));
+        studentData.put("email", rs.getString("email"));
+        studentData.put("photo", rs.getBytes("photo"));
+        studentData.put("preferred_rent", rs.getBigDecimal("preferred_rent"));
+        studentData.put("preferred_location", rs.getString("preferred_location"));
+        studentData.put("social_lifestyle", rs.getString("social_lifestyle"));
+        studentData.put("meal_preference", rs.getString("meal_preference"));
+        studentData.put("max_budget_for_roommate", rs.getBigDecimal("max_budget_for_roommate"));
+        return studentData;
+    }
+
+    private int calculateMatchingScore(HashMap<String, Object> s1, HashMap<String, Object> s2) {
+        int score = 0;
+
+        if (s1.get("social_lifestyle").equals(s2.get("social_lifestyle"))) {
+            score += 20;
+        }
+        if (s1.get("meal_preference").equals(s2.get("meal_preference"))) {
+            score += 20;
+        }
+
+        // Budget match calculation
+        BigDecimal budget1 = (BigDecimal) s1.get("max_budget_for_roommate");
+        BigDecimal budget2 = (BigDecimal) s2.get("max_budget_for_roommate");
+        if (budget1 != null && budget2 != null && Math.abs(budget1.subtract(budget2).doubleValue()) <= 100) {
+            score += 20;
+        }
+
+        // Preferred rent match calculation
+        BigDecimal rent1 = (BigDecimal) s1.get("preferred_rent");
+        BigDecimal rent2 = (BigDecimal) s2.get("preferred_rent");
+        if (rent1 != null && rent2 != null && Math.abs(rent1.subtract(rent2).doubleValue()) <= 100) {
+            score += 20;
+        }
+
+        // Location match
+        if (s1.get("preferred_location").equals(s2.get("preferred_location"))) {
+            score += 20;
         }
 
         return score;
     }
 
-    private List<HashMap<String, Object>> fetchMatchedStudents() {
-        List<HashMap<String, Object>> data = new ArrayList<>();
-        int currentUserScore = getCurrentUserScore();  // Fetch current user's score
-        String currentUserLocation = getCurrentUserLocation();  // Fetch current user's location
-
-        String query = "SELECT u.user_id, u.firstname, u.lastname, u.photo, sd.preferred_location, " +
-                "sd.max_budget_for_roommate, sd.score " +
-                "FROM users u " +
-                "JOIN student_details sd ON u.user_id = sd.student_id " +
-                "WHERE ABS(sd.score - ?) <= 10 "                // Score tolerance filter
-                + "AND sd.preferred_location ILIKE ?";            // Partial match on location (case-insensitive)
-
-        DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-
-            ps.setInt(1, currentUserScore);  // Use current user's score for filtering
-            ps.setString(2, "%" + currentUserLocation + "%");  // Partial location match
-
-            ResultSet rs = ps.executeQuery();
-
-            while (rs.next()) {
-                HashMap<String, Object> student = new HashMap<>();
-                student.put("id", rs.getInt("user_id"));
-                student.put("firstname", rs.getString("firstname"));
-                student.put("lastname", rs.getString("lastname"));
-                student.put("preferred_location", rs.getString("preferred_location"));
-                student.put("score", rs.getInt("score"));
-                student.put("photo", rs.getBytes("photo"));
-                student.put("max_budget_for_roommate", rs.getInt("max_budget_for_roommate"));
-                data.add(student);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed to fetch data: " + e.getMessage());
-        }
-
-        return data;
-    }
-
-    private String getCurrentUserLocation() {
-        String location = "";
-        String query = "SELECT preferred_location FROM student_details WHERE student_id = ?";
-
-        DB_Functions db = new DB_Functions();
-        try (Connection conn = db.connect_to_db();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-
-            ps.setInt(1, userID);  // Retrieve current user’s ID
-            ResultSet rs = ps.executeQuery();
-
-            if (rs.next()) {
-                location = rs.getString("preferred_location");
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed to fetch user location: " + e.getMessage());
-        }
-
-        return location;
-    }
-
-
-
-    private JPanel userCard(HashMap<String, Object> studentDetails) {
-        // Card with fixed size
+    private JPanel createStudentCard(HashMap<String, Object> student) {
         JPanel card = new JPanel(new BorderLayout());
         card.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        card.setPreferredSize(new Dimension(500, 180)); // Adjusted card size for more information
-        card.setMaximumSize(new Dimension(500, 180)); // Maximum size to prevent stretching
+        card.setPreferredSize(new Dimension(500, 200));
         card.setBackground(Color.WHITE);
 
-        // Info panel with fixed grid and larger text
-        JPanel infoPanel = new JPanel(new GridLayout(5, 1)); // Adjusted grid layout for new field
-        infoPanel.setFont(new Font("Arial", Font.PLAIN, 16)); // Increase font size
-        String name = studentDetails.get("firstname") + " " + studentDetails.get("lastname");
+        JPanel infoPanel = new JPanel(new GridLayout(4, 1));
+        String name = student.get("firstname") + " " + student.get("lastname");
         JLabel nameLabel = new JLabel("Name: " + name);
-        JLabel phoneLabel = new JLabel("Phone: " + studentDetails.get("phone_number"));
-        JLabel emailLabel = new JLabel("Email: " + studentDetails.get("email"));
-        JLabel budgetLabel = new JLabel("Max Budget: $" + studentDetails.get("max_budget_for_roommate"));
+        JLabel rentLabel = new JLabel("Preferred Rent: $" + student.get("preferred_rent"));
+        JLabel lifestyleLabel = new JLabel("Social Lifestyle: " + student.get("social_lifestyle"));
+        JLabel mealLabel = new JLabel("Meal Preference: " + student.get("meal_preference"));
 
         infoPanel.add(nameLabel);
-        infoPanel.add(phoneLabel);
-        infoPanel.add(emailLabel);
-        infoPanel.add(budgetLabel);
+        infoPanel.add(rentLabel);
+        infoPanel.add(lifestyleLabel);
+        infoPanel.add(mealLabel);
 
-        // Display profile photo (No photo or placeholder text)
-        byte[] photoBytes = (byte[]) studentDetails.get("photo"); // Get photo bytes
-        JLabel photoLabel;
-        if (photoBytes != null) {
-            ImageIcon unscaled = new ImageIcon(photoBytes);
-            Image scaled = unscaled.getImage().getScaledInstance(100, 140, 0);
-            photoLabel = new JLabel(new ImageIcon(scaled));
-        } else {
-            // Provide a default image or text if no photo exists
-            photoLabel = new JLabel("No photo available");
-            photoLabel.setPreferredSize(new Dimension(100, 100));
-            photoLabel.setHorizontalAlignment(JLabel.CENTER);
+        // Display profile photo
+        JLabel photoLabel = new JLabel();
+        byte[] photoData = (byte[]) student.get("photo");
+        if (photoData != null) {
+            try {
+                BufferedImage img = ImageIO.read(new ByteArrayInputStream(photoData));
+                Image scaledImg = img.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+                photoLabel.setIcon(new ImageIcon(scaledImg));
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
-        photoLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        else
+            photoLabel.setText("No photo");
 
-        // Accept Request button
-        JButton acceptButton = new JButton("Send roommate request");
-        acceptButton.addActionListener(e -> sendRequest((int) studentDetails.get("id")));
+        // Display accommodation images (optional)
+        JPanel imagePanel = new JPanel(new BorderLayout());
+        DB_Functions db = new DB_Functions();
+        try (Connection conn = db.connect_to_db()) {
+            String accommodationImagesQuery = """
+            SELECT image_data
+            FROM accommodation_images ai
+            JOIN accommodation a ON ai.accommodation_id = a.accommodation_id
+            WHERE a.user_id = ?
+            """;
+            PreparedStatement ps = conn.prepareStatement(accommodationImagesQuery);
+            ps.setInt(1, (int) student.get("user_id"));
+            ResultSet rs = ps.executeQuery();
+
+            int imageCount = 0;
+            while (rs.next() && imageCount < 3) {  // Display up to 3 images (you can adjust this limit)
+                byte[] imageData = rs.getBytes("image_data");
+                if (imageData != null) {
+                    try {
+                        BufferedImage img = ImageIO.read(new ByteArrayInputStream(imageData));
+                        Image scaledImg = img.getScaledInstance(50, 50, Image.SCALE_SMOOTH);
+                        imagePanel.add(new JLabel(new ImageIcon(scaledImg)),BorderLayout.EAST);
+                        imageCount++;
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Score and Send Request button
+        JLabel scoreLabel = new JLabel("Matching Score: " + student.get("score") + "%");
+        JButton sendRequestButton = new JButton("Send Request");
+        sendRequestButton.addActionListener(e -> sendRequest((int) student.get("user_id")));
 
         // Arrange components in card
         JPanel bottomPanel = new JPanel(new FlowLayout());
-        bottomPanel.add(acceptButton);
+        bottomPanel.add(scoreLabel);
+        bottomPanel.add(sendRequestButton);
 
         card.add(photoLabel, BorderLayout.WEST);
         card.add(infoPanel, BorderLayout.CENTER);
+        card.add(imagePanel, BorderLayout.EAST);  // Add the image gallery to the right side
         card.add(bottomPanel, BorderLayout.SOUTH);
+
         return card;
     }
 
@@ -174,22 +226,23 @@ public class RoommateMatchingApp extends JFrame {
     private void sendRequest(int recipientId) {
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
-            String insertRequest = "INSERT INTO requests (sender_id, recipient_id, request_type, status) " +
-                    "VALUES (?, ?, 'roommate_request', 'pending')";
+            String insertRequest = """
+                        INSERT INTO requests (sender_id, recipient_id, request_type, status)
+                        VALUES (?, ?, 'roommate_request', 'pending')
+                    """;
             PreparedStatement ps = conn.prepareStatement(insertRequest);
-            ps.setInt(1, userID);
+            ps.setInt(1, getCurrentUserId()); // Sender's user ID
             ps.setInt(2, recipientId);
             ps.executeUpdate();
 
             JOptionPane.showMessageDialog(this, "Request sent successfully!");
         } catch (SQLException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed to send request: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Failed to send request.");
         }
     }
 
-
     public static void main(String[] args) {
-        new RoommateMatchingApp(6);
+        SwingUtilities.invokeLater(RoommateMatchingApp::new);
     }
 }
