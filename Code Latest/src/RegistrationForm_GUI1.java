@@ -34,7 +34,7 @@ public class RegistrationForm_GUI1 extends JFrame {
         UIManager.put("Button.font", new Font("Arial", Font.BOLD, 16));
 
         setTitle("Register");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 

@@ -1,7 +1,6 @@
 import java.awt.*;
 import javax.swing.*;
 import java.sql.*;
-import java.util.ArrayList;
 
 public class OwnerDashboard extends JFrame {
     private JTextArea ownerDetailsArea;
@@ -9,23 +8,29 @@ public class OwnerDashboard extends JFrame {
     int userID; // get from Session
     JLabel ownerImageLabel;
     JPanel containerPanel;
+
     public OwnerDashboard(int userID) {
+        this.userID = userID;
 
-        this.userID=userID;
-
+        // Button Panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
         JButton sendRequestButton = new JButton("Add Property");
         sendRequestButton.setPreferredSize(new Dimension(150, 50));
         sendRequestButton.setFont(new Font("Arial", Font.BOLD, 16));
+        sendRequestButton.setBackground(new Color(52, 14, 15)); // Blue background
+        sendRequestButton.setForeground(Color.WHITE); // White text
+        sendRequestButton.setFocusPainted(false); // Remove focus outline
+        sendRequestButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Add padding
+        sendRequestButton.setBorderPainted(false); // Remove border outline
+        sendRequestButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Hand cursor
         buttonPanel.add(sendRequestButton);
-        sendRequestButton.addActionListener(e->{
+        sendRequestButton.addActionListener(e -> {
             new AddPropertyGUI(userID);
         });
 
-
         setTitle("Owner Dashboard");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Set the frame to full screen
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
         // Main container panel for all elements
@@ -35,29 +40,30 @@ public class OwnerDashboard extends JFrame {
 
         // Title Panel
         JPanel titlePanel = new JPanel();
-        titlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        titlePanel.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 3)); // Blue border
         JLabel titleLabel = new JLabel("Owner Dashboard");
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 30));
+        titleLabel.setForeground(new Color(52, 14, 15)); // Blue color
         titlePanel.add(titleLabel);
 
         // Owner Info Panel
         JPanel ownerInfoPanel = new JPanel(new BorderLayout(10, 10));
-        ownerInfoPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        ownerInfoPanel.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2)); // Blue border
 
         // Owner image
         ImageIcon ownerImage;
         ownerImageLabel = new JLabel(""); // Placeholder text
         ownerImageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         ownerImageLabel.setPreferredSize(new Dimension(150, 150));
-        ownerImageLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+        ownerImageLabel.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2));
 
         // Owner details
         ownerDetailsArea = new JTextArea();
         ownerDetailsArea.setEditable(false);
         ownerDetailsArea.setLineWrap(true);
         ownerDetailsArea.setWrapStyleWord(true);
-        ownerDetailsArea.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
-        ownerDetailsArea.setFont(new Font("Times New Roman",Font.BOLD , 20));
+        ownerDetailsArea.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2)); // Blue border
+        ownerDetailsArea.setFont(new Font("Arial", Font.BOLD, 20));
         ownerDetailsArea.setBackground(new Color(242, 241, 237));
 
         ownerInfoPanel.add(ownerImageLabel, BorderLayout.WEST);
@@ -80,45 +86,60 @@ public class OwnerDashboard extends JFrame {
         containerPanel.add(Box.createRigidArea(new Dimension(0, 20))); // Space between details and properties
         containerPanel.add(scrollPane); // Add the scrollable panel
 
-        // Add container panel to main frame
+        // Create Notification Button Panel
+        JPanel notificationPanel = new JPanel(new BorderLayout());
+
+        JButton notificationButton = new JButton("🔔" + " Check for Notifications");
+        notificationButton.setPreferredSize(new Dimension(50, 50));
+        notificationButton.setBackground(new Color(52, 14, 15)); // Blue background
+        notificationButton.setForeground(Color.WHITE); // White text
+        notificationButton.setFont(new Font("Arial", Font.BOLD, 14)); // Adjust font size
+        notificationPanel.add(notificationButton, BorderLayout.CENTER);
+        notificationButton.addActionListener(e -> {
+            StudentNotificationGUI sn = new StudentNotificationGUI(userID);
+            // dispose();
+        });
+
+        add(notificationPanel, BorderLayout.NORTH);
+
+        // Add the rest of the components
         add(containerPanel, BorderLayout.CENTER);
-
-        // Load data from database
-        loadAccommodations("",null);
-
-        getOwnerDetails();
         add(buttonPanel, BorderLayout.PAGE_END);
+
         // Ensure frame is visible
         setVisible(true);
+
+        // Load data from database
+        loadAccommodations("", null);
+        getOwnerDetails();
     }
 
-    private void getOwnerDetails(){
+    private void getOwnerDetails() {
         DB_Functions db = new DB_Functions();
         Connection conn = db.connect_to_db();
 
         String ownerQuery = "SELECT firstname, lastname, email, phone_number, photo FROM users WHERE user_id = ?";
-            try (PreparedStatement ownerStmt = conn.prepareStatement(ownerQuery)) {
-                ownerStmt.setInt(1, userID); // Use ownerId from session
-                ResultSet ownerRs = ownerStmt.executeQuery();
+        try (PreparedStatement ownerStmt = conn.prepareStatement(ownerQuery)) {
+            ownerStmt.setInt(1, userID); // Use ownerId from session
+            ResultSet ownerRs = ownerStmt.executeQuery();
 
-                if (ownerRs.next()) {
-                    String ownerDetails = "Owner Details:\n"
-                            + "Name: " + ownerRs.getString("firstname") + " " + ownerRs.getString("lastname") + "\n"
-                            + "Phone Number: " + ownerRs.getString("phone_number") + "\n"
-                            + "Email: " + ownerRs.getString("email");
-                    ownerDetailsArea.setText(ownerDetails);
-                    // Retrieve and set image (assuming photo is stored as binary data)
-                    byte[] imageData = ownerRs.getBytes("photo");
-                    if (imageData != null) {
-                        ImageIcon unscaled = new ImageIcon(imageData);
-                        Image scaled = unscaled.getImage().getScaledInstance(150, 190, 0);
-                        ownerImageLabel.setIcon(new ImageIcon(scaled));
-                    }
+            if (ownerRs.next()) {
+                String ownerDetails = "Owner Details:\n"
+                        + "Name: " + ownerRs.getString("firstname") + " " + ownerRs.getString("lastname") + "\n"
+                        + "Phone Number: " + ownerRs.getString("phone_number") + "\n"
+                        + "Email: " + ownerRs.getString("email");
+                ownerDetailsArea.setText(ownerDetails);
+                // Retrieve and set image (assuming photo is stored as binary data)
+                byte[] imageData = ownerRs.getBytes("photo");
+                if (imageData != null) {
+                    ImageIcon unscaled = new ImageIcon(imageData);
+                    Image scaled = unscaled.getImage().getScaledInstance(150, 190, 0);
+                    ownerImageLabel.setIcon(new ImageIcon(scaled));
                 }
-            }catch (Exception e){
-                JOptionPane.showMessageDialog(null, e.getMessage());
             }
-
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
     }
 
     private void loadAccommodations(String location, String rentRange) {
@@ -126,7 +147,7 @@ public class OwnerDashboard extends JFrame {
 
         DB_Functions db = new DB_Functions();
         try (Connection conn = db.connect_to_db()) {
-            String query = String.format("SELECT * FROM accommodation WHERE user_id=%d",userID);
+            String query = String.format("SELECT * FROM accommodation WHERE user_id=%d", userID);
 
             if (location != null && !location.isEmpty()) {
                 query += " AND accommodation_address ILIKE ?";
@@ -183,7 +204,8 @@ public class OwnerDashboard extends JFrame {
                 forImage.close();
                 stmt2.close();
 
-                JPanel accommodationCard = createAccommodationCard(accId, accName, scaledAccImage, address, price, roommateCount);
+                JPanel accommodationCard = createAccommodationCard(accId, accName, scaledAccImage, address, price,
+                        roommateCount);
                 propertyPanel.add(accommodationCard);
                 propertyPanel.add(Box.createVerticalStrut(10)); // Spacing between cards
             }
@@ -197,40 +219,44 @@ public class OwnerDashboard extends JFrame {
         propertyPanel.repaint();
     }
 
-
-    private JPanel createAccommodationCard(int accoID,String accName,ImageIcon accImage ,String address, String price, int roommateCount) {
+    private JPanel createAccommodationCard(int accoID, String accName, ImageIcon accImage, String address, String price,
+            int roommateCount) {
         JPanel card = new JPanel(new BorderLayout());
         card.setPreferredSize(new Dimension(700, 150)); // Constant card size
         card.setMaximumSize(new Dimension(700, 150)); // Enforce consistent size
-        card.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
+        card.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2)); // Blue border
         card.setBackground(Color.WHITE);
 
         // Landscape photo placeholder
-        JLabel photoLabel = new JLabel(accImage); //"Photo", SwingConstants.CENTER
+        JLabel photoLabel = new JLabel(accImage); // "Photo", SwingConstants.CENTER
         photoLabel.setPreferredSize(new Dimension(280, 200)); // Wider and shorter for landscape orientation
-        photoLabel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        photoLabel.setBorder(BorderFactory.createLineBorder(new Color(52, 14, 15), 2));
         card.add(photoLabel, BorderLayout.WEST);
 
         // Info Panel
         JPanel infoPanel = new JPanel(new GridLayout(4, 1));
         infoPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        //Name
-        JLabel accNameLabel = new JLabel("Name: "+ accName);
+        // Name
+        JLabel accNameLabel = new JLabel("Name: " + accName);
         accNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        accNameLabel.setForeground(new Color(52, 14, 15)); // Blue color
         infoPanel.add(accNameLabel);
 
         // Address
         JLabel addressLabel = new JLabel("Address: " + address);
         addressLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        addressLabel.setForeground(new Color(52, 14, 15)); // Blue color
         infoPanel.add(addressLabel);
 
         // Price and Roommate count panel
         JPanel detailsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         JLabel priceLabel = new JLabel("Price: " + price);
         priceLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        priceLabel.setForeground(new Color(52, 14, 15)); // Blue color
         JLabel roommateCountLabel = new JLabel("Roommate count: " + roommateCount);
         roommateCountLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        roommateCountLabel.setForeground(new Color(52, 14, 15)); // Blue color
         detailsPanel.add(priceLabel);
         infoPanel.add(detailsPanel);
         infoPanel.add(roommateCountLabel);
@@ -240,13 +266,14 @@ public class OwnerDashboard extends JFrame {
         // More details button
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton detailsButton = new JButton("More details...");
+        detailsButton.setBackground(new Color(52, 14, 15)); // Blue button
+        detailsButton.setForeground(Color.WHITE); // White text
+        detailsButton.setFont(new Font("Arial", Font.BOLD, 14)); // Adjust font size
+        detailsButton.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20)); // Padding
+        detailsButton.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR)); // Hand cursor
         detailsButton.addActionListener(e -> {
             // Pass the accommodation ID and user ID to the next screen
-
-//            JDialog notificationPage = new JDialog(this, "Notifications",true);
-//            notificationPage.add(new AccommodationDetailsSwingGUI(userID,accoID));
-
-            AccommodationDetailsSwingGUI accDetailedPage  = new AccommodationDetailsSwingGUI(2, accoID , false );
+            AccommodationDetailsSwingGUI accDetailedPage = new AccommodationDetailsSwingGUI(2, accoID, false);
         });
         buttonPanel.add(detailsButton);
 
@@ -255,85 +282,7 @@ public class OwnerDashboard extends JFrame {
         return card;
     }
 
-
-    // Helper method to load data from the database
-//    private void loadDataFromDatabase() {
-//
-//        DB_Functions db = new DB_Functions();
-//        try (Connection conn = db.connect_to_db()) {
-//            if (conn == null) {
-//                JOptionPane.showMessageDialog(null, "Connection is NULL");
-//            }
-//
-//            // Fetch owner details
-//            String ownerQuery = "SELECT firstname, lastname, email, phone_number, photo FROM users WHERE user_id = ?";
-//            try (PreparedStatement ownerStmt = conn.prepareStatement(ownerQuery)) {
-//                ownerStmt.setInt(1, userID); // Use ownerId from session
-//                ResultSet ownerRs = ownerStmt.executeQuery();
-//
-//                if (ownerRs.next()) {
-//                    String ownerDetails = "Owner Details:\n"
-//                            + "Name: " + ownerRs.getString("firstname") + " " + ownerRs.getString("lastname") + "\n"
-//                            + "Phone Number: " + ownerRs.getString("phone_number") + "\n"
-//                            + "Email: " + ownerRs.getString("email");
-//                    ownerDetailsArea.setText(ownerDetails);
-//                    // Retrieve and set image (assuming photo is stored as binary data)
-//                    byte[] imageData = ownerRs.getBytes("photo");
-//                    if (imageData != null) {
-//                        ImageIcon unscaled = new ImageIcon(imageData);
-//                        Image scaled = unscaled.getImage().getScaledInstance(150,190,0);
-////                        JLabel photoLabel = new JLabel( new ImageIcon(scaled) );
-////
-////                        ImageIcon ownerImage = new ImageIcon(imageData);
-//                        ownerImageLabel.setIcon(new ImageIcon(scaled));
-//                    }
-//                }
-//            }
-//
-//            // Fetch property listings
-//            String propertyQuery = "SELECT accommodation_name, numRooms, accommodation_address, rent FROM accommodation WHERE user_id = ?";
-//            try (PreparedStatement propertyStmt = conn.prepareStatement(propertyQuery)) {
-//                propertyStmt.setInt(1, userID);
-//                ResultSet propertyRs = propertyStmt.executeQuery();
-//                while (propertyRs.next()) {
-//                    String propertyName = propertyRs.getString("accommodation_name");
-//                    int rooms = propertyRs.getInt("numRooms");
-//                    String address = propertyRs.getString("accommodation_address");
-//                    double rent = propertyRs.getDouble("rent");
-//
-//                    // Fetch property image (assuming first image only for simplicity)
-//                    ImageIcon propertyImage = null;
-//                    String imageQuery = "SELECT image_data FROM accommodation_images WHERE accommodation_id = (SELECT accommodation_id FROM accommodation WHERE user_id = ? LIMIT 1)";
-//                    try (PreparedStatement imageStmt = conn.prepareStatement(imageQuery)) {
-//                        imageStmt.setInt(1, userID);
-//                        ResultSet imageRs = imageStmt.executeQuery();
-//                        if (imageRs.next()) {
-//                            byte[] imageData = imageRs.getBytes("image_data");
-//                            if (imageData != null) {
-//                                propertyImage = new ImageIcon(imageData);
-//                            }
-//                        }
-//                    }
-//
-//                    addPropertyCard(propertyName, rooms, address, rent, propertyImage);
-//                }
-//            }
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//            JOptionPane.showMessageDialog(this, "Error loading data from database.\n" + e.getMessage(),
-//                    "Database Error",
-//                    JOptionPane.ERROR_MESSAGE);
-//        }
-//    }
-//
-//    private void addPropertyCard(String name, int rooms, String address, double rent, ImageIcon image) {
-//        PropertyCard propertyCard = new PropertyCard(name, rooms, address, rent, image);
-//        propertyPanel.add(propertyCard);
-//        propertyPanel.add(Box.createVerticalStrut(10)); // Space between cards
-//        propertyPanel.revalidate(); // Refresh panel to show new listings
-//    }
-
     public static void main(String[] args) {
-        new OwnerDashboard(1);
+        new OwnerDashboard(7);
     }
 }

@@ -13,7 +13,7 @@ public class RoommateMatchingApp extends JFrame {
 
         setTitle("Roommate Matching");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));

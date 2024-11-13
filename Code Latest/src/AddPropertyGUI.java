@@ -22,7 +22,7 @@ public class AddPropertyGUI extends JFrame {
 
         setTitle("Add Property");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full-screen
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Main Panel

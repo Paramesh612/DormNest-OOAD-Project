@@ -8,7 +8,7 @@ public class Test1 {
     Test1(){
         frame = new JFrame();
         frame.setSize(400,400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         // frame.doLayout();
         frame.setLayout(new FlowLayout());
 

@@ -17,7 +17,7 @@ public class StudentPreferencesForm_GUI extends JFrame {
         setTitle("Student Preferences Form");
         setSize(500, 650);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
 
         JPanel panel = new JPanel(new GridBagLayout());

@@ -10,7 +10,7 @@ public class Login_GUI {
         // Set up JFrame
         JFrame frame = new JFrame("Login");
         frame.setSize(600, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setLayout(new GridBagLayout());
 
         // System.err.println("Full-screen mode is not supported.");
