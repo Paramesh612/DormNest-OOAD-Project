@@ -19,7 +19,7 @@ public class RoommateMatchingApp extends JFrame {
 
         setTitle("Roommate Matching");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
@@ -124,14 +124,14 @@ public class RoommateMatchingApp extends JFrame {
         // Budget match calculation
         BigDecimal budget1 = (BigDecimal) s1.get("max_budget_for_roommate");
         BigDecimal budget2 = (BigDecimal) s2.get("max_budget_for_roommate");
-        if (budget1 != null && budget2 != null && Math.abs(budget1.subtract(budget2).doubleValue()) <= 100) {
+        if (budget1 != null && budget2 != null && Math.abs(budget1.subtract(budget2).doubleValue()) <= 1000) {
             score += 20;
         }
 
         // Preferred rent match calculation
         BigDecimal rent1 = (BigDecimal) s1.get("preferred_rent");
         BigDecimal rent2 = (BigDecimal) s2.get("preferred_rent");
-        if (rent1 != null && rent2 != null && Math.abs(rent1.subtract(rent2).doubleValue()) <= 100) {
+        if (rent1 != null && rent2 != null && Math.abs(rent1.subtract(rent2).doubleValue()) <= 1000) {
             score += 20;
         }
 
@@ -208,7 +208,7 @@ public class RoommateMatchingApp extends JFrame {
         }
 
         // Score and Send Request button
-        JLabel scoreLabel = new JLabel("Matching Score: " + student.get("score") + "%");
+        JLabel scoreLabel = new JLabel("Matching Score: " + (Integer)student.get("score")*(.94) + "%");
         JButton sendRequestButton = new JButton("Send Request");
         sendRequestButton.addActionListener(e -> sendRequest((int) student.get("user_id")));
 
