@@ -165,7 +165,7 @@ public class RegistrationForm_GUI1 extends JFrame {
         setVisible(true);
     }
 
-    private class SubmitButtonListener implements ActionListener {
+    class SubmitButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
             String firstName = firstNameField.getText();
@@ -192,7 +192,7 @@ public class RegistrationForm_GUI1 extends JFrame {
         }
     }
 
-    private String hashPassword(String password) {
+    String hashPassword(String password) {
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] hashBytes = md.digest(password.getBytes());

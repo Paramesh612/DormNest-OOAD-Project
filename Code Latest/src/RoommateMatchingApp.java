@@ -208,7 +208,11 @@ public class RoommateMatchingApp extends JFrame {
         }
 
         // Score and Send Request button
-        JLabel scoreLabel = new JLabel("Matching Score: " + (Integer)student.get("score")*(.94) + "%");
+//        JLabel scoreLabel = new JLabel("Matching Score: " + (int)student.get("score")*(.94) + "%");
+
+        double score = ((Integer) student.get("score")) * 0.94;
+        JLabel scoreLabel = new JLabel("Matching Score: " + String.format("%.2f", score) + "%");
+
         JButton sendRequestButton = new JButton("Send Request");
         sendRequestButton.addActionListener(e -> sendRequest((int) student.get("user_id")));
 

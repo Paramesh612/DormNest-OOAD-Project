@@ -10,10 +10,13 @@ import java.util.ArrayList;
 
 public class AddPropertyGUI extends JFrame {
     int userID;
-    private JTextField nameField, priceField, numPeopleField;
-    private JTextArea ownerNoteArea, addressField;
+    JTextField nameField;
+    JTextField priceField;
+    JTextField numPeopleField;
+    JTextArea ownerNoteArea;
+    JTextArea addressField;
     private JButton imageButton, submitButton;
-    private JPanel imageDisplayPanel;
+    JPanel imageDisplayPanel;
     private ArrayList<File> selectedFiles = new ArrayList<>();
 
     public AddPropertyGUI(int userID) {
@@ -129,7 +132,7 @@ public class AddPropertyGUI extends JFrame {
         setVisible(true);
     }
 
-    private void addImageThumbnail(File file) {
+    void addImageThumbnail(File file) {
         // Create a scaled thumbnail and add it to imageDisplayPanel
         ImageIcon icon = new ImageIcon(
                 new ImageIcon(file.getAbsolutePath()).getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH));
