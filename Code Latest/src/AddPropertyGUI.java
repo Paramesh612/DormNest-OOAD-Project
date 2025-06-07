@@ -147,7 +147,6 @@ public class AddPropertyGUI extends JFrame {
         public void actionPerformed(ActionEvent e) {
             DB_Functions db = new DB_Functions();
             try (Connection conn = db.connect_to_db()) {
-
                 if (conn == null) {
                     JOptionPane.showMessageDialog(null, "Failed to connect to the database.");
                     return;

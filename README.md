@@ -1,2 +1,1 @@
-# OOAD Project
- DormNest - Student Accommodation Finder
+DormNest - Student Accommodation Finder
