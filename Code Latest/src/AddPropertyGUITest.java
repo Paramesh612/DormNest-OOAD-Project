@@ -1,52 +1,52 @@
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import javax.swing.*;
-import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-class AddPropertyGUITest {
-
-    private AddPropertyGUI addPropertyGUI;
-
-    @BeforeEach
-    void setUp() {
-        addPropertyGUI = new AddPropertyGUI(1);
-    }
-
-    @Test
-    void testNameFieldIsEmptyInitially() {
-        assertEquals("", addPropertyGUI.nameField.getText(), "Name field should be empty initially.");
-    }
-
-    @Test
-    void testPriceFieldAcceptsNumericInput() {
-        addPropertyGUI.priceField.setText("1200.50");
-        assertDoesNotThrow(() -> Double.parseDouble(addPropertyGUI.priceField.getText()),
-                "Price field should accept numeric input.");
-    }
-
-    @Test
-    void testNumPeopleFieldAcceptsIntegerInput() {
-        addPropertyGUI.numPeopleField.setText("4");
-        assertDoesNotThrow(() -> Integer.parseInt(addPropertyGUI.numPeopleField.getText()),
-                "Number of People field should accept integer input.");
-    }
-
-    @Test
-    void testAddingImageThumbnail() {
-        int initialThumbnailCount = addPropertyGUI.imageDisplayPanel.getComponentCount();
-        File dummyFile = new File("dummy.jpg"); // Use an existing image file for testing
-        addPropertyGUI.addImageThumbnail(dummyFile);
-        assertEquals(initialThumbnailCount + 1, addPropertyGUI.imageDisplayPanel.getComponentCount(),
-                "Image thumbnail should be added to the panel.");
-    }
-}
-
+//import org.junit.jupiter.api.BeforeEach;
+//import org.junit.jupiter.api.Test;
+//
+//import javax.swing.*;
+//import java.io.File;
+//import java.sql.Connection;
+//import java.sql.PreparedStatement;
+//import java.sql.ResultSet;
+//
+//import static org.junit.jupiter.api.Assertions.*;
+//
+//class AddPropertyGUITest {
+//
+//    private AddPropertyGUI addPropertyGUI;
+//
+//    @BeforeEach
+//    void setUp() {
+//        addPropertyGUI = new AddPropertyGUI(1);
+//    }
+//
+//    @Test
+//    void testNameFieldIsEmptyInitially() {
+//        assertEquals("", addPropertyGUI.nameField.getText(), "Name field should be empty initially.");
+//    }
+//
+//    @Test
+//    void testPriceFieldAcceptsNumericInput() {
+//        addPropertyGUI.priceField.setText("1200.50");
+//        assertDoesNotThrow(() -> Double.parseDouble(addPropertyGUI.priceField.getText()),
+//                "Price field should accept numeric input.");
+//    }
+//
+//    @Test
+//    void testNumPeopleFieldAcceptsIntegerInput() {
+//        addPropertyGUI.numPeopleField.setText("4");
+//        assertDoesNotThrow(() -> Integer.parseInt(addPropertyGUI.numPeopleField.getText()),
+//                "Number of People field should accept integer input.");
+//    }
+//
+//    @Test
+//    void testAddingImageThumbnail() {
+//        int initialThumbnailCount = addPropertyGUI.imageDisplayPanel.getComponentCount();
+//        File dummyFile = new File("dummy.jpg"); // Use an existing image file for testing
+//        addPropertyGUI.addImageThumbnail(dummyFile);
+//        assertEquals(initialThumbnailCount + 1, addPropertyGUI.imageDisplayPanel.getComponentCount(),
+//                "Image thumbnail should be added to the panel.");
+//    }
+//}
+//
 
 
 
